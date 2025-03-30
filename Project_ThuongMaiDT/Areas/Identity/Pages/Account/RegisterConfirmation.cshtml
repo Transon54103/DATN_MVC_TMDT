@@ -1,0 +1,25 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Xác thực Email";
+}
+@if (User.IsInRole(SD.Role_Admin))
+{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container d-flex justify-content-center align-items-center ">
+    <div class="card shadow-lg p-4 border-0 rounded-4 text-center" style="max-width: 400px;">
+        <div class="card-body">
+            <div class="mb-3">
+                <i class="bi bi-envelope-check-fill text-primary" style="font-size: 3rem;"></i>
+            </div>
+            <h2 class="fw-bold">@ViewData["Title"]</h2>
+            <p class="">Bạn cần truy cập vào email để xác thực tài khoản.</p>
+        </div>
+    </div>
+</div>
+
+
+
+
