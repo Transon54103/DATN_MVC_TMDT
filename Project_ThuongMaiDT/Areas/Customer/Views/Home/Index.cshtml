@@ -1,4 +1,5 @@
-﻿@model ProductViewModel
+﻿@using System.Globalization
+@model ProductViewModel
 
 <section class="hero-section position-relative padding-large" style="background-image: url(/images/banner-image-bg-1.jpg); background-size: cover; background-repeat: no-repeat; background-position: center; height: 400px;">
     <div class="hero-content">
@@ -56,7 +57,9 @@
                                         <div class="review-content d-flex">
                                             <p class="my-2 me-2 fs-6 text-black-50">@product.Author</p>
                                         </div>
-                                        <span class="price text-primary fw-bold mb-2 fs-5">@product.Price</span>
+                                        <span class="price text-primary fw-bold mb-2 fs-5">
+                                            @product.Price.ToString("C0", new CultureInfo("vi-VN"))
+                                        </span>
                                         <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
                                             <button class="btn btn btn-dark add-to-cart" data-product-id="@product.Id">
                                                 <svg class="cart">
@@ -155,14 +158,19 @@
                 success: function (response) {
                     if (response.success) {
                         $("#cart-count").text(`(${response.cartCount})`);
-
                         alert(response.message);
                     } else {
-                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                        // Chuyển hướng sang trang đăng nhập
+                        window.location.href = "/Identity/Account/Login";
                     }
                 },
-                error: function () {
-                    alert("Có lỗi xảy ra, vui lòng thử lại!");
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        // Nếu chưa đăng nhập (unauthorized), chuyển đến login
+                        window.location.href = "/Identity/Account/Login";
+                    } else {
+                        alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+                    }
                 }
             });
         });

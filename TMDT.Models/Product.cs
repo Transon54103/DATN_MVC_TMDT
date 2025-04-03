@@ -24,31 +24,35 @@ namespace TMDT.Models
         public string Author { get; set; }
         [Required]
         [Display(Name ="List Price")]
-        [Range(1,1000)]
+        [Range(1, 100000000)]
         public double ListPrice { get; set; }
 
         [Required]
         [Display(Name = "Price for 1-50")]
-        [Range(1, 1000)]
+        [Range(1, 100000000)]
         public double Price { get; set; }
 
         [Required]
         [Display(Name = "Price for 50+")]
-        [Range(1, 1000)]
+        [Range(1, 100000000)]
         public double Price50 { get; set; }
 
         [Required]
         [Display(Name = "Price for 100+")]
-        [Range(1, 1000)]
+        [Range(1, 100000000)]
         public double Price100 { get; set; }
         public int CategoryId { get; set; }
+        public int? AuthorId { get; set; }
+        [ForeignKey("AuthorId")]  // Thiết lập mối quan hệ khóa ngoại
+        [ValidateNever]
+        public Author Authors { get; set; }
         [ForeignKey("CategoryId")]
         [ValidateNever]
         public Category Category { get; set; }
         [ValidateNever]
         public string ImageUrl { get; set; }
         // Thêm trạng thái đăng bán
-        public bool? IsActive { get; set; } = false;
+        public bool? IsActive { get; set; }
 
     }
 }

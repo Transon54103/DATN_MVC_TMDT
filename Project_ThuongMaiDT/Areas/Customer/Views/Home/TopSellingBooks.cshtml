@@ -1,4 +1,6 @@
-﻿@model IEnumerable<TMDT.Models.Product>;
+﻿@using System.Globalization
+@model IEnumerable<TMDT.Models.Product>;
+
 <section id="billboard" class="position-relative d-flex align-items-center py-5 bg-light-gray" style="background-image: url(images/banner-image-bg.jpg); background-size: cover; background-repeat: no-repeat; background-position: center; height: 800px;">
     <div class="position-absolute end-0 pe-0 pe-xxl-5 me-0 me-xxl-5 swiper-next main-slider-button-next" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-ea9996a4e547bdab" aria-disabled="false">
         <svg class="chevron-forward-circle d-flex justify-content-center align-items-center p-2" width="80" height="80">
@@ -81,8 +83,8 @@
                         </svg>
                     </div>
                     <div class="icon-box-content">
-                        <h4 class="card-title mb-1 text-capitalize text-dark">Free delivery</h4>
-                        <p>Consectetur adipi elit lorem ipsum dolor sit amet.</p>
+                        <h4 class="card-title mb-1 text-capitalize text-dark">Giao hàng miễn phí</h4>
+                        <p>Chúng tôi cung cấp dịch vụ giao hàng miễn phí với chất lượng đảm bảo.</p>
                     </div>
                 </div>
             </div>
@@ -94,8 +96,8 @@
                         </svg>
                     </div>
                     <div class="icon-box-content">
-                        <h4 class="card-title mb-1 text-capitalize text-dark">Quality guarantee</h4>
-                        <p>Dolor sit amet orem ipsu mcons ectetur adipi elit.</p>
+                        <h4 class="card-title mb-1 text-capitalize text-dark">Cam kết chất lượng</h4>
+                        <p>Chúng tôi đảm bảo sản phẩm chất lượng cao với tiêu chuẩn quốc tế.</p>
                     </div>
                 </div>
             </div>
@@ -107,8 +109,8 @@
                         </svg>
                     </div>
                     <div class="icon-box-content">
-                        <h4 class="card-title mb-1 text-capitalize text-dark">Daily offers</h4>
-                        <p>Amet consectetur adipi elit loreme ipsum dolor sit.</p>
+                        <h4 class="card-title mb-1 text-capitalize text-dark">Ưu đãi hàng ngày</h4>
+                        <p>Các ưu đãi đặc biệt hàng ngày cho khách hàng thân thiết.</p>
                     </div>
                 </div>
             </div>
@@ -120,19 +122,20 @@
                         </svg>
                     </div>
                     <div class="icon-box-content">
-                        <h4 class="card-title mb-1 text-capitalize text-dark">100% secure payment</h4>
-                        <p>Rem Lopsum dolor sit amet, consectetur adipi elit.</p>
+                        <h4 class="card-title mb-1 text-capitalize text-dark">100% an toàn</h4>
+                        <p>Chúng tôi cam kết bảo mật thông tin thanh toán của bạn với công nghệ tiên tiến.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 <section id="best-selling-items" class="position-relative padding-large ">
     <div class="container">
         <div class="section-title d-md-flex justify-content-between align-items-center mb-4">
-            <h3 class="d-flex align-items-center">Best selling items</h3>
-            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn">View All</a>
+            <h3 class="d-flex align-items-center">Sản Phẩm Bán Chạy</h3>
+            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn">Tất Cả</a>
         </div>
         <div class="position-absolute top-50 end-0 pe-0 pe-xxl-5 me-0 me-xxl-5 swiper-next product-slider-button-next" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-2aba4a0aa84f2bf3" aria-disabled="false">
             <svg class="chevron-forward-circle d-flex justify-content-center align-items-center p-2" width="80" height="80">
@@ -172,13 +175,15 @@
                                     </svg>
                                 </div>
                             </div>
-                            <span class="price text-primary fw-bold mb-2 fs-5">@item.Price</span>
+                            <span class="price text-primary fw-bold mb-2 fs-5">
+                                @item.Price.ToString("C0", new CultureInfo("vi-VN"))
+                            </span>
                             <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
-                                <button type="button" href="#" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top">
-                                    <svg class="cart">
-                                        <use xlink:href="#cart"></use>
-                                    </svg>
-                                </button>
+                                            <button class="btn btn btn-dark add-to-cart" data-product-id="@item.Id">
+                                                <svg class="cart">
+                                                    <use xlink:href="#cart"></use>
+                                                </svg>
+                                            </button>
                                 <a asp-action="Details"
                                    asp-route-productId="@item.Id" class="btn btn-dark">
                                     <span>
@@ -205,3 +210,29 @@
         @TempData["ErrorMessage"]
     </div>
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".add-to-cart").click(function () {
+            var productId = $(this).data("product-id");
+
+            $.ajax({
+                url: "/Customer/Home/AddToCart",
+                type: "POST",
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        $("#cart-count").text(`(${response.cartCount})`);
+
+                        alert(response.message);
+                    } else {
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    }
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra, vui lòng thử lại!");
+                }
+            });
+        });
+    });
+</script>

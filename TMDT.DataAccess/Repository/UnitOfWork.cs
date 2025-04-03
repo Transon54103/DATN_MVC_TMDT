@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using TMDT.DataAccess.Data;
 using TMDT.DataAccess.Repository.IRepository;
 
+
 namespace TMDT.DataAccess.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
         private ApplicationDbContext _db;
+        public IAuthorRepository Author { get; set; }
         public ICategoryRepository Category { get; private set; }
         public IProductRepository Product { get; private set; }
         public ICompanyRepository Company { get; private set; }
@@ -31,7 +33,8 @@ namespace TMDT.DataAccess.Repository
             Company = new CompanyRepository(_db);
             OrderHeader = new OrderHeaderRepository(_db);
             OrderDetail = new OrderDetailRepository(_db);
-            Recommendation = new RecommendationRepository(_db); // ✅ Khởi tạo
+            Recommendation = new RecommendationRepository(_db);
+            Author = new AuthorRepository(_db);// ✅ Khởi tạo
         }
 
         public void Save()

@@ -12,6 +12,7 @@ namespace TMDT.DataAccess.Data
         {
 
         }
+        public DbSet<Author> authors { get; set; }
         public DbSet<Category> categories { get; set; }
         public DbSet<Product> products { get; set; }
         public DbSet<Company> companies { get; set; }
@@ -28,7 +29,7 @@ namespace TMDT.DataAccess.Data
                 new Category { Id = 2, Name = "History", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "SciFi", DisplayOrder = 3 } 
                 );
-                        modelBuilder.Entity<Company>().HasData(
+            modelBuilder.Entity<Company>().HasData(
                 new Company { Id = 1, Name = "Tech Solution", StreetAddress="123 Tech St", City="Tech City",
                                 PostalCode="12121", State="IL", PhoneNumber="6669990000"},
                 new Company {
@@ -65,7 +66,8 @@ namespace TMDT.DataAccess.Data
                     Price100 = 80,
                     CategoryId = 2,
                     ImageUrl = "",
-                    IsActive = true
+                    IsActive = true,
+                    AuthorId = 1
                 },
                 new Product
                 {
@@ -80,7 +82,9 @@ namespace TMDT.DataAccess.Data
                     Price100 = 20,
                     CategoryId = 2,
                     ImageUrl = "",
-                    IsActive = true
+                    IsActive = true,
+                    AuthorId = 1
+
                 },
                 new Product
                 {
@@ -95,7 +99,9 @@ namespace TMDT.DataAccess.Data
                     Price100 = 35,
                     CategoryId = 2,
                     ImageUrl = "",
-                    IsActive = true
+                    IsActive = true,
+                    AuthorId = 1
+
                 },
                 new Product
                 {
@@ -110,7 +116,9 @@ namespace TMDT.DataAccess.Data
                     Price100 = 55,
                     CategoryId = 3,
                     ImageUrl = "",
-                    IsActive = true
+                    IsActive = true,
+                    AuthorId = 1
+
                 },
                 new Product
                 {
@@ -125,7 +133,9 @@ namespace TMDT.DataAccess.Data
                     Price100 = 20,
                     CategoryId = 3,
                     ImageUrl = "",
-                    IsActive = true
+                    IsActive = true,
+                    AuthorId = 1
+
                 },
                 new Product
                 {
@@ -140,7 +150,8 @@ namespace TMDT.DataAccess.Data
                     Price100 = 20,
                     CategoryId = 3,
                     ImageUrl = "",
-                    IsActive = true
+                    IsActive = true,
+                    AuthorId = 1
                 }
                 );
         }

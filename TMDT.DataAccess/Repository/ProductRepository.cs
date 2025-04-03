@@ -33,6 +33,7 @@ namespace TMDT.DataAccess.Repository
                 objFromDb.Description = obj.Description;
                 objFromDb.CategoryId = obj.CategoryId;
                 objFromDb.Author = obj.Author;
+                objFromDb.AuthorId = obj.AuthorId;
                 objFromDb.IsActive = obj.IsActive;
                 if (obj.ImageUrl != null)
                 {

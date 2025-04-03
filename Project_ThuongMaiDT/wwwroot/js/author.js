@@ -5,21 +5,15 @@ $(document).ready(function () {
 
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
-        "ajax": { url: '/admin/product/getall' },
+        "ajax": { url: '/admin/author/getall' },
         "columns": [
-            { data: 'title', "width": "20%" },
-            { data: 'isbn', "width": "15%" },
-            { data: 'listPrice', "width": "10%" },
-            { data: 'authors.name', "width": "15%" },
-            { data: 'category.name', "width": "10%" },
+            { data: 'name', "width": "25%" },
             {
-                data: 'isActive',
-                "render": function (data, type, row) {
-                    let btnClass = data ? "btn-success" : "btn-secondary";
-                    let btnText = data ? "Đang bán" : "Không bán";
-                    return `<button class="btn ${btnClass}" onclick="UpdateIsActive(${row.id})">${btnText}</button>`;
+                data: 'imageUrl',
+                "render": function (data) {
+                    return data ? `<img src="${data}" width="50px" height="50px" style="border-radius:5px;"/>` : "No Image";
                 },
-                "width": "10%"
+                "width": "40%"
             },
             {
                 data: 'id',
@@ -28,18 +22,15 @@ function loadDataTable() {
                     let approveText = row.isActive ? "Hủy duyệt" : "Duyệt";
 
                     return `<div class="w-100 btn-group" role="group">
-                        <a href="/admin/product/upsert?id=${data}" class="btn btn-primary mx-1">
+                        <a href="/admin/author/upsert?id=${data}" class="btn btn-primary mx-1">
                             <i class="bi bi-pencil-square"></i> Edit
                         </a>
-                        <button class="btn ${approveClass} mx-1" onclick="UpdateIsActive(${data})">
-                            <i class="bi bi-check-circle"></i> ${approveText}
-                        </button>
-                        <button onClick="Delete('/admin/product/delete/${data}')" class="btn btn-danger mx-1">
+                        <button onClick="Delete('/admin/author/delete/${data}')" class="btn btn-danger mx-1">
                             <i class="bi bi-trash-fill"></i> Delete
                         </button>
                     </div>`;
                 },
-                "width": "25%"
+                "width": "30%"
             },
         ]
     });
@@ -68,13 +59,4 @@ function Delete(url) {
     });
 }
 
-function UpdateIsActive(id) {
-    $.post('/admin/product/updateisactive/' + id, function (data) {
-        if (data.success) {
-            dataTable.ajax.reload();
-            toastr.success(data.message);
-        } else {
-            toastr.error(data.message);
-        }
-    });
-}
+

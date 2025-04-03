@@ -12,8 +12,8 @@ using TMDT.DataAccess.Data;
 namespace TMDT.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250330092022_UpdateIsActiveInProduct")]
-    partial class UpdateIsActiveInProduct
+    [Migration("20250401111738_AddForeignKeyToProduct")]
+    partial class AddForeignKeyToProduct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -337,6 +337,23 @@ namespace TMDT.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TMDT.Models.Author", b =>
+                {
+                    b.Property<int>("AuthorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AuthorId");
+
+                    b.ToTable("authors");
+                });
+
             modelBuilder.Entity("TMDT.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -454,6 +471,9 @@ namespace TMDT.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -490,6 +510,8 @@ namespace TMDT.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorId");
+
                     b.HasIndex("CategoryId");
 
                     b.ToTable("products");
@@ -499,6 +521,7 @@ namespace TMDT.DataAccess.Migrations
                         {
                             Id = 1,
                             Author = "Billy Spark",
+                            AuthorId = 1,
                             CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "SWD9999001",
@@ -514,6 +537,7 @@ namespace TMDT.DataAccess.Migrations
                         {
                             Id = 2,
                             Author = "Nancy Hoover",
+                            AuthorId = 1,
                             CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "CAW777777701",
@@ -529,6 +553,7 @@ namespace TMDT.DataAccess.Migrations
                         {
                             Id = 3,
                             Author = "Julian Button",
+                            AuthorId = 1,
                             CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "RITO5555501",
@@ -544,6 +569,7 @@ namespace TMDT.DataAccess.Migrations
                         {
                             Id = 4,
                             Author = "Abby Muscles",
+                            AuthorId = 1,
                             CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "WS3333333301",
@@ -559,6 +585,7 @@ namespace TMDT.DataAccess.Migrations
                         {
                             Id = 5,
                             Author = "Ron Parker",
+                            AuthorId = 1,
                             CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "SOTJ1111111101",
@@ -574,6 +601,7 @@ namespace TMDT.DataAccess.Migrations
                         {
                             Id = 6,
                             Author = "Laura Phantom",
+                            AuthorId = 1,
                             CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "FOT000000001",
@@ -725,11 +753,17 @@ namespace TMDT.DataAccess.Migrations
 
             modelBuilder.Entity("TMDT.Models.Product", b =>
                 {
+                    b.HasOne("TMDT.Models.Author", "Authors")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
                     b.HasOne("TMDT.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Authors");
 
                     b.Navigation("Category");
                 });

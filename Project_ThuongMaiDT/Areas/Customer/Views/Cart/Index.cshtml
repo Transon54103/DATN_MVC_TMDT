@@ -168,7 +168,8 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="total-price">
-                                                    <span class="money fs-2 fw-light text-primary">$@(item.Price * item.Count)</span>
+                                                    <span class="money fs-2 fw-light text-primary">@((item.Price * item.Count).ToString("#,##0") + " VNĐ")</span>
+
                                                 </div>
                                             </div>
                                         </div>

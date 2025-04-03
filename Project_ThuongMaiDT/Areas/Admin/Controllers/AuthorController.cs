@@ -1,114 +1,91 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using TMDT.DataAccess.Data;
 using TMDT.DataAccess.Repository.IRepository;
 using TMDT.Models;
 using TMDT.Models.ViewModels;
 using TMDT.Utility;
 
-
 namespace Project_ThuongMaiDT.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = SD.Role_Admin)]
-    public class ProductController : Controller
+    public class AuthorController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public AuthorController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
-            List<Product> objproductlist = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors").ToList();
+            List<Author> objproductlist = _unitOfWork.Author.GetAll().ToList();
 
             return View(objproductlist);
         }
         public IActionResult Upsert(int? id)
         {
-            ProductVM productVM = new()
-            {
-                CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                }),
-                AuthorList = _unitOfWork.Author.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.AuthorId.ToString()
-                }),
-                Product = new Product()
-            };
+
             if (id == null || id == 0)
             {
                 //create
-                return View(productVM);
+                return View(new Author());
             }
             else
             {
                 //update
-                productVM.Product = _unitOfWork.Product.Get(u => u.Id == id);
-                return View(productVM);
+                Author companyObj = _unitOfWork.Author.Get(u => u.AuthorId == id);
+                return View(companyObj);
             }
         }
         [HttpPost]
-        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
+        public IActionResult Upsert(Author author, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
+
                 if (file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"Images\product");
-                    if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
-                    {
-                        //delete old image
-                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+                    string authorPath = Path.Combine(wwwRootPath, @"Images\authors");
 
+                    if (!string.IsNullOrEmpty(author.ImageUrl))
+                    {
+                        // Xóa ảnh cũ nếu có
+                        var oldImagePath = Path.Combine(wwwRootPath, author.ImageUrl.TrimStart('\\'));
                         if (System.IO.File.Exists(oldImagePath))
                         {
                             System.IO.File.Delete(oldImagePath);
                         }
                     }
-                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+
+                    using (var fileStream = new FileStream(Path.Combine(authorPath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
-                    productVM.Product.ImageUrl = @"\Images\product\" + fileName;
+                    author.ImageUrl = @"\Images\authors\" + fileName;
                 }
-                if (productVM.Product.Id == 0)
+
+                if (author.AuthorId == 0)
                 {
-                    _unitOfWork.Product.Add(productVM.Product);
+                    _unitOfWork.Author.Add(author);
+                    TempData["success"] = "Author added successfully";
                 }
                 else
                 {
-                    _unitOfWork.Product.Update(productVM.Product);
+                    _unitOfWork.Author.Update(author);
+                    TempData["success"] = "Author updated successfully";
                 }
+
                 _unitOfWork.Save();
-                TempData["success"] = "Product create successfully";
                 return RedirectToAction("Index");
             }
-            else
-            {
-                productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                });
-                productVM.AuthorList = _unitOfWork.Author.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.AuthorId.ToString()
-                });
-                return View(productVM);
-
-            }
+            return View(author);
         }
+
         //public IActionResult Edit(int? id)
         //{
         //    if (id == null || id == 0)
@@ -157,49 +134,55 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
         //    return RedirectToAction("Index");
         //}
         #region API CALLS
+
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Product> objproductlist = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors").ToList();
-            return Json(new { data = objproductlist });
+            List<Author> authorList = _unitOfWork.Author.GetAll().ToList();
+            return Json(new { data = authorList });
         }
+
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var productToBeDeleted = _unitOfWork.Product.Get(u => u.Id == id);
-            if (productToBeDeleted == null)
+            var authorToBeDeleted = _unitOfWork.Author.Get(u => u.AuthorId == id);
+            if (authorToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
 
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath,
-                productToBeDeleted.ImageUrl.TrimStart('\\'));
-
-            if (System.IO.File.Exists(oldImagePath))
+            // Xóa ảnh nếu có
+            if (!string.IsNullOrEmpty(authorToBeDeleted.ImageUrl))
             {
-                System.IO.File.Delete(oldImagePath);
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, authorToBeDeleted.ImageUrl.TrimStart('\\'));
+
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
             }
-            _unitOfWork.Product.Remove(productToBeDeleted);
+
+            _unitOfWork.Author.Remove(authorToBeDeleted);
             _unitOfWork.Save();
-            return Json(new { success = false, message = "Error successful" });
+            return Json(new { success = true, message = "Author deleted successfully" });
         }
+
         [HttpPost]
         public IActionResult UpdateIsActive(int id)
         {
-            var product = _unitOfWork.Product.Get(u => u.Id == id);
-            if (product.IsActive == null)
+            var author = _unitOfWork.Author.Get(u => u.AuthorId == id);
+            if (author == null)
             {
-                product.IsActive = false;
+                return Json(new { success = false, message = "Author not found" });
             }
-
-            product.IsActive = !product.IsActive;
-            _unitOfWork.Product.Update(product);
+            _unitOfWork.Author.Update(author);
             _unitOfWork.Save();
 
-            return Json(new { success = true, message = "Sản phẩm đã được cập nhật" });
+            return Json(new { success = true, message = "Author status updated successfully" });
         }
 
         #endregion
+
 
     }
 }

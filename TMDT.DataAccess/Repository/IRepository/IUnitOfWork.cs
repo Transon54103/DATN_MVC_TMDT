@@ -16,6 +16,7 @@ namespace TMDT.DataAccess.Repository.IRepository
         IOrderDetailRepository OrderDetail { get; }
         IOrderHeaderRepository OrderHeader { get; }
         IRecommendationRepository Recommendation { get; } 
+        IAuthorRepository Author { get; }
         void Save();
         
     }

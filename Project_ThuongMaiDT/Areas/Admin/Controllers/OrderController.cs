@@ -156,8 +156,8 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
-                        Currency = "usd",
+                        UnitAmount = (long)item.Price, 
+                        Currency = "vnd", // Đổi sang VND
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Product.Title

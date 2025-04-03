@@ -137,6 +137,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                     CancelUrl = domain + "customer/cart/index",
                     LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
                     Mode = "payment",
+                    Currency = "vnd"
                 };
 
                 foreach (var item in ShoppingCartVM.ShoppingCartList)
@@ -145,8 +146,8 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                     {
                         PriceData = new Stripe.Checkout.SessionLineItemPriceDataOptions
                         {
-                            UnitAmount = (long)(item.Price * 100),
-                            Currency = "usd",
+                            UnitAmount = (long)(item.Price),
+                            Currency = "vnd",
                             ProductData = new Stripe.Checkout.SessionLineItemPriceDataProductDataOptions
                             {
                                 Name = item.Product.Title
