@@ -25,5 +25,7 @@ namespace TMDT.Models
         [ForeignKey("CompanyId")] // ID công ty là thuộc tính điều hướng cho thuộc công ty (Company) này 
         [ValidateNever]
         public Company? Company { get; set; }
+        [NotMapped]
+        public string Role { get; set; }
     }
 }

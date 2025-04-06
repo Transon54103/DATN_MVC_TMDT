@@ -201,7 +201,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             var subject = "Xác nhận đơn hàng thành công";
             var message = $"Xin chào {orderHeader.ApplicationUser.Name},<br/><br/>" +
                           $"Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được xác nhận thành công.<br/>" +
-                          $"Tổng tiền: ${orderHeader.OrderTotal}.<br/>" +
+                          $"Tổng tiền: {orderHeader.OrderTotal} VNĐ.<br/>" +
                           $"Đơn hàng của bạn đang được chuẩn bị và sẽ sớm được vận chuyển.<br/><br/>" +
                           $"Xin cảm ơn quý khách và chúc quý khách một ngày tốt lành!";
 

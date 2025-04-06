@@ -97,7 +97,6 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
         }
         [HttpPost]
-        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
         public IActionResult CancelOrder()
         {
 
@@ -121,7 +120,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, SD.StatusCancelled, SD.StatusCancelled);
             }
             _unitOfWork.Save();
-            TempData["Success"] = "Order Cancelled Successfully.";
+            TempData["Success"] = "Đã hủy đơn hàng";
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
 
         }
@@ -144,6 +143,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 CancelUrl = domain + $"customer/order/details?orderId={OrderVM.OrderHeader.Id}",
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
+                Currency = "vnd"
             };
 
             foreach (var item in OrderVM.OrderDetail)
@@ -152,8 +152,8 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
-                        Currency = "usd",
+                        UnitAmount = (long)(item.Price),
+                        Currency = "vnd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Product.Title
