@@ -103,7 +103,8 @@
         <div class="container">
             <div class="row">
                 <div class="text-center">
-                    <h1>Chi tiết sản phẩm</h1>
+                    <h1>CHI TIẾT SẢN PHẨM</h1>
+
                     <div class="breadcrumbs">
                         <span class="item">
                             <a asp-area="Customer" asp-controller="Home" asp-action="TopSellingBooks">Trang chủ &gt; </a>
@@ -236,8 +237,9 @@
                     <div class="element-header">
                         <h1 class="product-title"> @Model.Product.Title</h1>
                         <div class="product-price d-flex align-items-center mt-2">
-                            <span class="fs-2 fw-light text-primary me-2">@Model.Product.Price Đồng</span>
-                            <del>@Model.Product.ListPrice Đồng</del>
+                                <span class="fs-2 fw-light text-primary me-2">@Model.Product.Price.ToString("N0") Đồng</span>
+                                <del>@((Model.Product.ListPrice * 1.1).ToString("N0")) Đồng</del>
+
                         </div>
                     </div>
                     <p>@Html.Raw(Model.Product.Description)</p>
@@ -281,8 +283,8 @@
                                                 <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
                                             </button>
                                         </span>
-                                        <input asp-for="Count" type="number" value="1" type="text" id="quantity"  class="form-control bg-white shadow border rounded-3 py-2 mx-2 input-number text-center"  min="1" max="100" required="">  
-                                        <span class="input-group-btn">
+                                            <input asp-for="Count" type="number" value="1" type="text" data-max="@Model.Product.Quantity" id="quantity" class="form-control bg-white shadow border rounded-3 py-2 mx-2 input-number text-center" min="1" max="@Model.Product.Quantity" required="">
+                                            <span class="input-group-btn">
                                             <button type="button" class="bg-white shadow border rounded-3 fw-light quantity-right-plus" data-type="plus" data-field="">
                                                 <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
                                             </button>
@@ -307,13 +309,21 @@
                             </ul>
                         </div>
                         <div class="meta-item d-flex mb-1">
-                            <span class="fw-medium me-2">Category:</span>
+                            <span class="fw-medium me-2">Thể loại:</span>
                             <ul class="select-list list-unstyled d-flex mb-0">
                                 <li data-value="S" class="select-item">
                                     <a href="#"> @Model.Product.Category.Name</a>
                                 </li>
                             </ul>
                         </div>
+                            <div class="meta-item d-flex mb-1">
+                                <span class="fw-medium me-2">Số lượng còn lại:</span>
+                                <ul class="select-list list-unstyled d-flex mb-0">
+                                    <li data-value="S" class="select-item">
+                                        <a href="#"> @Model.Product.Quantity</a>
+                                    </li>
+                                </ul>
+                            </div>
 
                     </div>
                 </div>
@@ -364,7 +374,8 @@
                             }
                         </div>
                     </div>
-                    <span class="price text-primary fw-bold mb-2 fs-5">$@item.Price</span>
+                            <span class="price text-primary fw-bold mb-2 fs-5">@item.Price.ToString("N0") ₫</span>
+
                     <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
                         <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to Cart">
                             <svg class="cart"><use xlink:href="#cart"></use></svg>
@@ -387,3 +398,47 @@
         padding-bottom: 1em;
     }
 </style>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.quantity-right-plus').click(function (e) {
+                e.preventDefault();
+                var $input = $(this).closest('.product-qty').find('.input-number');
+                var quantity = parseInt($input.val());
+                var maxQty = parseInt($input.attr('data-max'))-1;
+
+                if (quantity < maxQty) {
+                    $input.val(quantity); // ✅ phải tăng lên chứ!
+                } else {
+                    $input.val(maxQty);
+                }
+            });
+
+            $('.quantity-left-minus').click(function (e) {
+                e.preventDefault();
+                var $input = $(this).closest('.product-qty').find('.input-number');
+                var quantity = parseInt($input.val());
+                var minQty = parseInt($input.attr('min'));
+
+                if (quantity > minQty) {
+                    $input.val(quantity); // ✅ phải giảm xuống
+                } else {
+                    $input.val(minQty);
+                }
+            });
+
+            $('.input-number').on('input', function () {
+                var maxQty = parseInt($(this).attr('data-max'));
+                var minQty = parseInt($(this).attr('min'));
+                var val = parseInt($(this).val());
+
+                if (val > maxQty) {
+                    $(this).val(maxQty);
+                } else if (val < minQty || isNaN(val)) {
+                    $(this).val(minQty);
+                }
+            });
+        });
+    </script>
+}
+

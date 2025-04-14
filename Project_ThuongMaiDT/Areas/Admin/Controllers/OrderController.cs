@@ -94,7 +94,9 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             {
                 orderHeader.PaymentDueDate = DateTime.Now.AddDays(30);
             }
-
+            // Trừ số lượng sản phẩm
+            var orderDetails = _unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == OrderVM.OrderHeader.Id, includeProperties: "Product");
+  
             _unitOfWork.OrderHeader.Update(orderHeader);
             _unitOfWork.Save();
             TempData["Success"] = "Đơn hàng đã được vận chuyển thành công.";
@@ -123,6 +125,12 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             else
             {
                 _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, SD.StatusCancelled, SD.StatusCancelled);
+            }
+            var orderDetails = _unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == OrderVM.OrderHeader.Id, includeProperties: "Product");
+            foreach (var item in orderDetails)
+            {
+                item.Product.Quantity += item.Count;
+                _unitOfWork.Product.Update(item.Product);
             }
             _unitOfWork.Save();
             TempData["Success"] = "Đơn hàng bị hủy thành công.";

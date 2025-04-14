@@ -59,7 +59,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             _unitOfWork.OrderHeader.Update(orderHeaderFromDb);
             _unitOfWork.Save();
 
-            TempData["Success"] = "Order Details Updated Successfully.";
+            TempData["Success"] = "Chi tiết đơn hàng đã được cập nhật";
 
 
             return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.Id });
@@ -72,7 +72,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
         {
             _unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.Id, SD.StatusInProcess);
             _unitOfWork.Save();
-            TempData["Success"] = "Order Details Updated Successfully.";
+            TempData["Success"] = "Chi tiết đơn hàng đã được cập nhật";
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
         }
 
@@ -93,7 +93,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
             _unitOfWork.OrderHeader.Update(orderHeader);
             _unitOfWork.Save();
-            TempData["Success"] = "Order Shipped Successfully.";
+            TempData["Success"] = "Chi tiết đơn hàng đã được cập nhật";
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
         }
         [HttpPost]
@@ -118,6 +118,16 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             else
             {
                 _unitOfWork.OrderHeader.UpdateStatus(orderHeader.Id, SD.StatusCancelled, SD.StatusCancelled);
+            }
+            var orderDetails = _unitOfWork.OrderDetail.GetAll(od => od.OrderHeaderId == orderHeader.Id);
+            foreach (var item in orderDetails)
+            {
+                var product = _unitOfWork.Product.Get(p => p.Id == item.ProductId);
+                if (product != null)
+                {
+                    product.Quantity += item.Count;
+                    _unitOfWork.Product.Update(product);
+                }
             }
             _unitOfWork.Save();
             TempData["Success"] = "Đã hủy đơn hàng";

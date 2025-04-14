@@ -13,11 +13,11 @@ namespace BulkyBook.Models
     public class OrderHeader
     {
         public int Id { get; set; }
-        public string ApplicationUserId { get; set; }
+        public string? ApplicationUserId { get; set; }
         [ForeignKey("ApplicationUserId")]//nếu không có dòng này EF sẽ tự động hiểu ApplicationID là khóa ngoài theo quy ước
         // [ForeignKey("<Tên_bảng_được_liên_kết>Id")]
         [ValidateNever]
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
 
         public DateTime OrderDate { get; set; }
         public DateTime ShippingDate { get; set; }
@@ -46,7 +46,7 @@ namespace BulkyBook.Models
         public string PostalCode { get; set; }
         [Required]
         public string Name { get; set; }
+		public string? GuestEmail { get; set; }
 
-
-    }
+	}
 }

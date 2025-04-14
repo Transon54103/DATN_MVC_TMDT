@@ -53,6 +53,11 @@ namespace TMDT.Models
         public string ImageUrl { get; set; }
         // Thêm trạng thái đăng bán
         public bool? IsActive { get; set; }
+		// Thêm thuộc tính Số lượng sản phẩm
+		[Display(Name = "Số lượng")]
+		[Range(0, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn hoặc bằng 0")]
+		public int? Quantity { get; set; }
 
-    }
+
+	}
 }

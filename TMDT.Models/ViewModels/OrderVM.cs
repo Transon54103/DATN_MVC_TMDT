@@ -10,6 +10,7 @@ namespace TMDT.Models.ViewModels
     public class OrderVM
     {
         public OrderHeader OrderHeader { get; set; }
+        public IEnumerable<ShoppingCart> ListCart { get; set; } // Giỏ hàng
         public IEnumerable<OrderDetail> OrderDetail { get; set; }
     }
 }

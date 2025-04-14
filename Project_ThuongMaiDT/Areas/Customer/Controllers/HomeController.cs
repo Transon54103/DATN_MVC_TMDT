@@ -113,37 +113,64 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
-        [Authorize]
         public IActionResult AddToCart(int productId)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == productId);
-
-            if (cartFromDb != null)
+            if (User.Identity.IsAuthenticated)
             {
-                cartFromDb.Count += 1;
-                _unitOfWork.ShoppingCart.Update(cartFromDb);
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == productId);
+
+                if (cartFromDb != null)
+                {
+                    cartFromDb.Count += 1;
+                    _unitOfWork.ShoppingCart.Update(cartFromDb);
+                }
+                else
+                {
+                    ShoppingCart shoppingCart = new()
+                    {
+                        ApplicationUserId = userId,
+                        ProductId = productId,
+                        Count = 1
+                    };
+                    _unitOfWork.ShoppingCart.Add(shoppingCart);
+                }
+
+                _unitOfWork.Save();
+
+                int cartCount = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count();
+                HttpContext.Session.SetInt32(SD.SessionCart, cartCount);
+
+                return Json(new { success = true, cartCount = cartCount, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
             }
             else
             {
-                ShoppingCart shoppingCart = new()
+                // Nếu chưa đăng nhập — lưu vào session
+                var cartSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession") ?? new List<CartSessionItem>();
+
+                var existingItem = cartSession.FirstOrDefault(c => c.ProductId == productId);
+                if (existingItem != null)
                 {
-                    ApplicationUserId = userId,
-                    ProductId = productId,
-                    Count = 1
-                };
-                _unitOfWork.ShoppingCart.Add(shoppingCart);
+                    existingItem.Count += 1;
+                }
+                else
+                {
+                    cartSession.Add(new CartSessionItem
+                    {
+                        ProductId = productId,
+                        Count = 1
+                    });
+                }
+
+                // Cập nhật lại session
+                HttpContext.Session.SetObjectAsJson("CartSession", cartSession);
+
+                return Json(new { success = true, cartCount = cartSession.Sum(c => c.Count), message = "Sản phẩm đã được thêm vào giỏ hàng!" });
             }
-
-            _unitOfWork.Save();
-
-            int cartCount = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count();
-            HttpContext.Session.SetInt32(SD.SessionCart, cartCount);
-
-            return Json(new { success = true, cartCount = cartCount, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
         }
+
 
 
 

@@ -8,7 +8,7 @@ function loadDataTable() {
         "ajax": { url: '/admin/product/getall' },
         "columns": [
             { data: 'title', "width": "20%" },
-            { data: 'isbn', "width": "15%" },
+            { data: 'quantity', "width": "15%" },
             { data: 'listPrice', "width": "10%" },
             { data: 'authors.name', "width": "15%" },
             { data: 'category.name', "width": "10%" },

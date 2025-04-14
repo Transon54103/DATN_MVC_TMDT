@@ -33,7 +33,20 @@ function loadDataTable(status) {
             { data: 'id', "width": "5%" },
             { data: 'name', "width": "25%" },
             { data: 'phoneNumber', "width": "20%" },
-            { data: 'applicationUser.email', "width": "20%" },
+            {
+                data: null,
+                "render": function (data) {
+                    if (data.applicationUser && data.applicationUser.email) {
+                        return data.applicationUser.email;
+                    } else if (data.guestEmail) {
+                        return data.guestEmail;
+                    } else {
+                        return "Không có email";
+                    }
+                },
+                "width": "15%",
+                "title": "Email"
+            },
             { data: 'orderStatus', "width": "10%" },
             { data: 'orderTotal', "width": "10%" },
             {

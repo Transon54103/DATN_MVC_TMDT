@@ -1,7 +1,9 @@
 ﻿using BulkyBook.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Stripe.Checkout;
 using System.Security.Claims;
 using TMDT.DataAccess.Repository.IRepository;
@@ -12,7 +14,6 @@ using TMDT.Utility;
 namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 {
     [Area("Customer")]
-    [Authorize]
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -29,12 +30,28 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            var cartFromDb = _unitOfWork.ShoppingCart.GetAll(
+                u => u.ApplicationUserId == userId && u.Product.IsActive == true,
+                includeProperties: "Product"
+            );
+
+            var cartFromSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession") ?? new List<CartSessionItem>();
+
+            // Chuyển CartSessionItem thành ShoppingCart giả
+            var cartSessionConverted = cartFromSession.Select(item => new ShoppingCart
+            {
+                Price = _unitOfWork.Product.Get(p => p.Id == item.ProductId).Price,
+                ProductId = item.ProductId,
+                Count = item.Count,
+                Product = _unitOfWork.Product.Get(p => p.Id == item.ProductId)
+            });
+
+            // Gộp lại
+            var combinedCart = cartFromDb.Concat(cartSessionConverted);
+
             ShoppingCartVM = new()
             {
-                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(
-                    u => u.ApplicationUserId == userId && u.Product.IsActive == true, // Chỉ lấy sản phẩm đang bán
-                    includeProperties: "Product"
-                ),
+                ShoppingCartList = combinedCart,
                 OrderHeader = new()
             };
 
@@ -46,139 +63,205 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
             return View(ShoppingCartVM);
         }
+
+
 
         public IActionResult Summary()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
             ShoppingCartVM = new()
             {
-                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(
-                    u => u.ApplicationUserId == userId && u.Product.IsActive == true, // Lọc sản phẩm active
-                    includeProperties: "Product"
-                ),
                 OrderHeader = new()
             };
 
-            ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+            if (User.Identity.IsAuthenticated)
+            {
+                // Người dùng đã đăng nhập → lấy giỏ từ DB
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
-            ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
-            ShoppingCartVM.OrderHeader.StreetAddress = ShoppingCartVM.OrderHeader.ApplicationUser.StreetAddress;
-            ShoppingCartVM.OrderHeader.City = ShoppingCartVM.OrderHeader.ApplicationUser.City;
-            ShoppingCartVM.OrderHeader.State = ShoppingCartVM.OrderHeader.ApplicationUser.State;
-            ShoppingCartVM.OrderHeader.PostalCode = ShoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
+                ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(
+                    u => u.ApplicationUserId == userId && u.Product.IsActive == true,
+                    includeProperties: "Product"
+                );
 
+                // Lấy thông tin user để fill OrderHeader
+                var appUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+                ShoppingCartVM.OrderHeader.ApplicationUser = appUser;
+                ShoppingCartVM.OrderHeader.Name = appUser.Name;
+                ShoppingCartVM.OrderHeader.PhoneNumber = appUser.PhoneNumber;
+                ShoppingCartVM.OrderHeader.StreetAddress = appUser.StreetAddress;
+                ShoppingCartVM.OrderHeader.City = appUser.City;
+                ShoppingCartVM.OrderHeader.State = appUser.State;
+                ShoppingCartVM.OrderHeader.PostalCode = appUser.PostalCode;
+            }
+            else
+            {
+                // Chưa đăng nhập → lấy giỏ từ Session
+                var cartFromSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession") ?? new List<CartSessionItem>();
+
+                // Convert session sang ShoppingCart list
+                ShoppingCartVM.ShoppingCartList = cartFromSession.Select(item =>
+                {
+                    var product = _unitOfWork.Product.Get(p => p.Id == item.ProductId);
+                    return new ShoppingCart
+                    {
+                        ProductId = item.ProductId,
+                        Count = item.Count,
+                        Product = product,
+                        Price = product.Price
+                    };
+                }).ToList();
+            }
+
+            // Tính tổng tiền
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
-                cart.Price = GetPriceBasedOnQuantity(cart);
+                // Nếu chưa set Price thì set theo số lượng
+                if (cart.Price == 0)
+                {
+                    cart.Price = GetPriceBasedOnQuantity(cart);
+                }
                 ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
 
             return View(ShoppingCartVM);
         }
-
-
-
         [HttpPost]
         [ActionName("Summary")]
-        public IActionResult SummaryPOST()
-		{
-			var claimsIdentity = (ClaimsIdentity)User.Identity;
-			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        public IActionResult SummaryPOST(OrderVM orderHeaderVM)
+        {
+            string userId = null;
+            List<ShoppingCart> cartList = new();
+            double cartTotal = 0;
 
-
-            ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,
-                includeProperties: "Product");
-            ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
-            ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
-			ApplicationUser applicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
-
-
-			foreach (var cart in ShoppingCartVM.ShoppingCartList)
-			{
-				cart.Price = GetPriceBasedOnQuantity(cart);
-				ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
-			}
-            if(applicationUser.CompanyId.GetValueOrDefault() == 0)
+            // Xác định user
+            if (User.Identity.IsAuthenticated)
             {
-                ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
-                ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                // Lấy giỏ hàng từ DB
+                cartList = _unitOfWork.ShoppingCart.GetAll(
+                    u => u.ApplicationUserId == userId && u.Product.IsActive == true,
+                    includeProperties: "Product"
+                ).ToList();
             }
             else
             {
-				ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
-				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
-			}
-			_unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
-            _unitOfWork.Save();
-            foreach (var cart in ShoppingCartVM.ShoppingCartList)
+                // Lấy giỏ hàng từ Session
+                var cartFromSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession") ?? new List<CartSessionItem>();
+                cartList = cartFromSession.Select(item =>
+                {
+                    var product = _unitOfWork.Product.Get(p => p.Id == item.ProductId);
+                    return new ShoppingCart
+                    {
+                        ProductId = item.ProductId,
+                        Count = item.Count,
+                        Product = product,
+                        Price = product.Price
+                    };
+                }).ToList();
+            }
+
+            // Kiểm tra giỏ có hàng không
+            if (!cartList.Any())
             {
-                OrderDetail order = new()
+                // Nếu rỗng quay về giỏ
+                return RedirectToAction("Summary");
+            }
+
+            // Tính tổng tiền
+            foreach (var cart in cartList)
+            {
+                if (cart.Price == 0)
+                {
+                    cart.Price = GetPriceBasedOnQuantity(cart);
+                }
+                cartTotal += cart.Count * cart.Price;
+            }
+
+            // Tạo order header
+            var orderHeader = new OrderHeader()
+            {
+				//ApplicationUser.Email = Email,
+				GuestEmail = orderHeaderVM.OrderHeader.GuestEmail,
+				ApplicationUserId = userId,
+                Name = orderHeaderVM.OrderHeader.Name,
+                PhoneNumber = orderHeaderVM.OrderHeader.PhoneNumber,
+                StreetAddress = orderHeaderVM.OrderHeader.StreetAddress,
+                City = orderHeaderVM.OrderHeader.City,
+                State = orderHeaderVM.OrderHeader.State,
+                PostalCode = orderHeaderVM.OrderHeader.PostalCode,
+                OrderDate = DateTime.Now,
+                OrderTotal = cartTotal,
+                PaymentStatus = SD.PaymentStatusPending,
+                OrderStatus = SD.StatusPending
+            };
+
+            _unitOfWork.OrderHeader.Add(orderHeader);
+            _unitOfWork.Save();
+
+            // Tạo order detail
+            foreach (var cart in cartList)
+            {
+                var orderDetail = new OrderDetail()
                 {
                     ProductId = cart.ProductId,
-                    OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+                    OrderHeaderId = orderHeader.Id,
                     Price = cart.Price,
-                    Count = cart.Count,
+                    Count = cart.Count
                 };
-                _unitOfWork.OrderDetail.Add(order);
+                _unitOfWork.OrderDetail.Add(orderDetail);
+                var product = _unitOfWork.Product.Get(p => p.Id == cart.ProductId);
+                product.Quantity -= cart.Count;
+                _unitOfWork.Product.Update(product);
             }
-
-            // Lưu tất cả OrderDetail một lần
             _unitOfWork.Save();
 
-            if (applicationUser.CompanyId.GetValueOrDefault() == 0)
+            // Tạo Stripe session
+            var domain = $"{Request.Scheme}://{Request.Host.Value}/";
+            var options = new SessionCreateOptions
             {
-                var domain = Request.Scheme + "://" + Request.Host.Value + '/';
-                var options = new Stripe.Checkout.SessionCreateOptions
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = cartList.Select(item => new SessionLineItemOptions
                 {
-                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
-                    CancelUrl = domain + "customer/cart/index",
-                    LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
-                    Mode = "payment",
-                    Currency = "vnd"
-                };
-
-                foreach (var item in ShoppingCartVM.ShoppingCartList)
-                {
-                    var SessionLineItem = new Stripe.Checkout.SessionLineItemOptions
+                    PriceData = new SessionLineItemPriceDataOptions
                     {
-                        PriceData = new Stripe.Checkout.SessionLineItemPriceDataOptions
+                        UnitAmount = (long)(item.Price),
+                        Currency = "vnd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
-                            UnitAmount = (long)(item.Price),
-                            Currency = "vnd",
-                            ProductData = new Stripe.Checkout.SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = item.Product.Title
-                            }
-                        },
-                        Quantity = item.Count
-                    };
-                    options.LineItems.Add(SessionLineItem);
-                }
+                            Name = item.Product.Title
+                        }
+                    },
+                    Quantity = item.Count
+                }).ToList(),
+                Mode = "payment",
+                SuccessUrl = domain + $"Customer/Cart/OrderConfirmation?id={orderHeader.Id}",
+                CancelUrl = domain + "Customer/Cart/Summary"
+            };
 
-                var service = new Stripe.Checkout.SessionService();
-                Session session = service.Create(options);
-                _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
-                _unitOfWork.Save();
+            var service = new SessionService();
+            Session session = service.Create(options);
 
-                Response.Headers.Add("Location", session.Url);
-                return new StatusCodeResult(303);
-            }
+            // Lưu sessionId
+            orderHeader.SessionId = session.Id;
+            _unitOfWork.Save();
 
-            return RedirectToAction(nameof(OrderConfirmation), new {id = ShoppingCartVM.OrderHeader.Id});
-		}
-		public IActionResult OrderConfirmation(int id)
+            // Redirect tới Stripe Checkout
+            return Redirect(session.Url);
+        }
+
+
+        public IActionResult OrderConfirmation(int id)
 		{
 
             OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser");
 
-            if (orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
+            if (!string.IsNullOrEmpty(orderHeader.SessionId) && orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
             {
-                // Xác nhận thanh toán từ Stripe
                 var service = new SessionService();
-                Session session = service.Get(orderHeader.SessionId);
+                var session = service.Get(orderHeader.SessionId);
 
                 if (session.PaymentStatus.ToLower() == "paid")
                 {
@@ -195,35 +278,47 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
 
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
+
             _unitOfWork.Save();
+            if (orderHeader.ApplicationUser != null && !string.IsNullOrEmpty(orderHeader.ApplicationUser.Email))
+            {
+                var subject = "Xác nhận đơn hàng thành công";
+                var message = $@"
+                                Xin chào {orderHeader.ApplicationUser.Name},<br/><br/>
+                                Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được xác nhận thành công.<br/>
+                                Tổng tiền: {orderHeader.OrderTotal:N0} VNĐ.<br/>
+                                Đơn hàng đang được chuẩn bị và sẽ sớm được vận chuyển.<br/><br/>
+                                Xin cảm ơn quý khách và chúc quý khách một ngày tốt lành!
+                            ";
 
-            // Gửi email xác nhận
-            var subject = "Xác nhận đơn hàng thành công";
-            var message = $"Xin chào {orderHeader.ApplicationUser.Name},<br/><br/>" +
-                          $"Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được xác nhận thành công.<br/>" +
-                          $"Tổng tiền: {orderHeader.OrderTotal} VNĐ.<br/>" +
-                          $"Đơn hàng của bạn đang được chuẩn bị và sẽ sớm được vận chuyển.<br/><br/>" +
-                          $"Xin cảm ơn quý khách và chúc quý khách một ngày tốt lành!";
+                _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, subject, message);
+            }
 
-            _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, subject, message);
 
             return View(id);
         }
-		public IActionResult Plus(int cartId) //cartId nhận từ view qua url qua code ASP-Router-cartId
+        public IActionResult Plus(int cartId)
         {
-            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.Id  == cartId);
-            cartFromDb.Count += 1;
-            _unitOfWork.ShoppingCart.Update(cartFromDb);
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
+            var cartFromDb = _unitOfWork.ShoppingCart
+                                        .Get(u => u.Id == cartId, includeProperties: "Product");
+
+
+            // Kiểm tra nếu số lượng không vượt quá giới hạn
+            if (cartFromDb.Count < cartFromDb.Product.Quantity)
+            {
+                cartFromDb.Count += 1;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+                _unitOfWork.Save();
+            }
+
+            return RedirectToAction(nameof(Index)); // Quay lại trang danh sách giỏ hàng
         }
+
         public IActionResult Minus(int cartId)
         {
             var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId, tracked: true);
-            //muốn xóa, thêm đối tượng này chúng ta phải theo dõi nó có tác động vào csdl
-            //tìm hiểu thêm
 
-            if(cartFromDb.Count <= 1)
+            if (cartFromDb.Count <= 1)
             {
                 HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == cartFromDb.ApplicationUserId).Count() - 1);
                 _unitOfWork.ShoppingCart.Remove(cartFromDb);
@@ -233,9 +328,12 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 cartFromDb.Count -= 1;
                 _unitOfWork.ShoppingCart.Update(cartFromDb);
             }
+
             _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(Index)); // Quay lại trang danh sách giỏ hàng
         }
+
         public IActionResult Remove(int cartId)
         {
             var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId, tracked: true);
