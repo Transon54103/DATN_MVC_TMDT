@@ -1,4 +1,5 @@
 ﻿using BulkyBook.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,8 @@ namespace TMDT.DataAccess.Repository
             var productIds = topProducts.Select(p => p.ProductId).ToList();
 
             return _db.products
-                .Where(p => productIds.Contains(p.Id)&& p.IsActive == true)
+                .Where(p => productIds.Contains(p.Id)&& p.IsActive == true).Include(p => p.Category)
+        .Include(p => p.Authors).Include(p => p.ProductImages)
                 .ToList();
         }
 

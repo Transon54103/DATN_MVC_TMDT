@@ -97,6 +97,8 @@
 							<h4 class="d-flex justify-content-between align-items-center mb-3">
 								<span class="text-info">Tóm tắt đơn hàng:</span>
 							</h4>
+							@using System.Globalization
+
 							<ul class="list-group mb-3">
 								@foreach (var details in Model.ShoppingCartList)
 								{
@@ -105,15 +107,16 @@
 											<h6 class="my-0">@details.Product.Title</h6>
 											<small class="my-0">Số lượng: @details.Count</small>
 										</div>
-										<span class="text-info">@((details.Price * details.Count).ToString("c")) </span>
+										<span class="text-info">@((details.Price * details.Count).ToString("c0", CultureInfo.GetCultureInfo("vi-VN")))</span>
 									</li>
 								}
 
 								<li class="list-group-item d-flex justify-content-between bg-light">
-									<small class="text-info">Tổng (USD)</small>
-									<strong class="text-info">@Model.OrderHeader.OrderTotal.ToString("c")</strong>
+									<small class="text-info">Tổng (VNĐ)</small>
+									<strong class="text-info">@Model.OrderHeader.OrderTotal.ToString("c0", CultureInfo.GetCultureInfo("vi-VN"))</strong>
 								</li>
 							</ul>
+
 						</div>
 					</div>
 				</div>

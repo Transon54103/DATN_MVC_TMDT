@@ -2,6 +2,9 @@
 using System.Security.Claims;
 using TMDT.DataAccess.Repository.IRepository;
 using TMDT.Utility;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
+using TMDT.Models;
 
 namespace Project_ThuongMaiDT.ViewComponents
 {
@@ -20,10 +23,18 @@ namespace Project_ThuongMaiDT.ViewComponents
             var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
             int cartCount = 0;
+
             if (claim != null)
             {
-                cartCount = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value && u.Product.IsActive==true).Count();
+                // Nếu người dùng đã đăng nhập
+                cartCount = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value && u.Product.IsActive == true).Count();
                 HttpContext.Session.SetInt32(SD.SessionCart, cartCount);
+            }
+            else
+            {
+                // Nếu người dùng chưa đăng nhập, lấy số lượng từ session
+                var cartSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession");
+                cartCount = cartSession != null ? cartSession.Sum(c => c.Count) : 0;
             }
 
             return View(cartCount);

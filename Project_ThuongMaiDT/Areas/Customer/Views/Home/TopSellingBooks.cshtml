@@ -1,5 +1,5 @@
 ﻿@using System.Globalization
-@model IEnumerable<TMDT.Models.Product>;
+@model List<TMDT.Models.Product>;
 
 <section id="billboard" class="position-relative d-flex align-items-center py-5 bg-light-gray" style="background-image: url(images/banner-image-bg.jpg); background-size: cover; background-repeat: no-repeat; background-position: center; height: 800px;">
     <div class="position-absolute end-0 pe-0 pe-xxl-5 me-0 me-xxl-5 swiper-next main-slider-button-next" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-ea9996a4e547bdab" aria-disabled="false">
@@ -19,14 +19,15 @@
                     <div class="row d-flex flex-column-reverse flex-md-row align-items-center">
                         <div class="col-md-5 offset-md-1 mt-5 mt-md-0 text-center text-md-start">
                             <div class="banner-content">
-                                <h2>The Fine Print Book Collection</h2>
-                                <p>Best Offer Save 30%. Grab it now!</p>
-                                <a href="index.html" class="btn mt-3">Shop Collection</a>
+                                <h2 style="font-weight: 800;">Đọc sách hay   giá nhẹ nhàng</h2>
+                                <p >Ưu đãi tốt nhất, giảm 30%. Nhanh tay sở hữu ngay!</p>
+                                <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn mt-3">Mua sản phẩm</a>
+
                             </div>
                         </div>
                         <div class="col-md-6 text-center">
                             <div class="image-holder">
-                                <img src="/images/banner-image2.png" class="img-fluid" alt="banner">
+                                <img src="/images/post-item2.jpg" class="img-fluid" alt="banner">
                             </div>
                         </div>
                     </div>
@@ -37,32 +38,15 @@
                     <div class="row d-flex flex-column-reverse flex-md-row align-items-center">
                         <div class="col-md-5 offset-md-1 mt-5 mt-md-0 text-center text-md-start">
                             <div class="banner-content">
-                                <h2>How Innovation works</h2>
-                                <p>Discount available. Grab it now!</p>
-                                <a href="index.html" class="btn mt-3">Shop Product</a>
+                                <h2 style="font-weight: 800;">Chinh Phục Thế Giới Bằng Những Cuốn Sách</h2>
+                                <p>Giảm giá đặc biệt. Nhanh tay sở hữu ngay!</p>
+                                <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn mt-3">Mua sản phẩm</a>
+
                             </div>
                         </div>
                         <div class="col-md-6 text-center">
                             <div class="image-holder">
-                                <img src="/images/banner-image1.png" class="img-fluid" alt="banner">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide" role="group" aria-label="3 / 3" style="width: 1407px;">
-                <div class="container">
-                    <div class="row d-flex flex-column-reverse flex-md-row align-items-center">
-                        <div class="col-md-5 offset-md-1 mt-5 mt-md-0 text-center text-md-start">
-                            <div class="banner-content">
-                                <h2>Your Heart is the Sea</h2>
-                                <p>Limited stocks available. Grab it now!</p>
-                                <a href="index.html" class="btn mt-3">Shop Collection</a>
-                            </div>
-                        </div>
-                        <div class="col-md-6 text-center">
-                            <div class="image-holder">
-                                <img src="/images/banner-image.png" class="img-fluid" alt="banner">
+                                <img src="/images/single-image2.jpg" class="img-fluid" alt="banner">
                             </div>
                         </div>
                     </div>
@@ -71,6 +55,7 @@
         </div>
         <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
     </div>
+
 </section>
 <section id="company-services" class="padding-large pb-0">
     <div class="container">
@@ -153,10 +138,17 @@
                 {
                     <div class="swiper-slide swiper-slide-active" role="group" aria-label="2 / 6" style="width: 218.667px; margin-right: 20px;">
                         <div class="card position-relative p-4 border rounded-3">
-                            <img src="@item.ImageUrl" class="img-fluid shadow-sm" alt="product item">
-                            <h6 class="mt-4 mb-0 fw-bold"><a href="index.html">"@item.Title</a></h6>
+                            @if (item.ProductImages != null && item.ProductImages.Count > 0)
+                            {
+                                <img src="@item.ProductImages[0].ImageUrl" class="img-fluid shadow-sm" alt="@item.Title" />
+                            }
+                            else
+                            {
+                                <img src="https://placehold.co/500x600/png" class="card-img-top rounded w-100" />
+                            }
+                            <h6 class="mt-4 mb-0 fw-bold"><a href="index.html">"@item.Title"</a></h6>
                             <div class="review-content d-flex">
-                                <p class="my-2 me-2 fs-6 text-black-50">@item.Author</p>
+                                <p class="my-2 me-2 fs-6 text-black-50">@item.Authors.Name</p>
                                 <div class="rating text-warning d-flex align-items-center">
                                     <svg class="star star-fill">
                                         <use xlink:href="#star-fill"></use>

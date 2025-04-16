@@ -21,8 +21,6 @@ namespace TMDT.Models
         [Required]
         public string ISBN { get; set; }
         [Required]
-        public string Author { get; set; }
-        [Required]
         [Display(Name ="List Price")]
         [Range(1, 100000000)]
         public double ListPrice { get; set; }
@@ -50,14 +48,16 @@ namespace TMDT.Models
         [ValidateNever]
         public Category Category { get; set; }
         [ValidateNever]
-        public string ImageUrl { get; set; }
+        //public string ImageUrl { get; set; }
         // Thêm trạng thái đăng bán
         public bool? IsActive { get; set; }
 		// Thêm thuộc tính Số lượng sản phẩm
 		[Display(Name = "Số lượng")]
 		[Range(0, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn hoặc bằng 0")]
 		public int? Quantity { get; set; }
+        [ValidateNever]
+        public List<ProductImage> ProductImages { get; set; }
 
 
-	}
+    }
 }

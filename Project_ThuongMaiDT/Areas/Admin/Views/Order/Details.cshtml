@@ -238,7 +238,7 @@
                                             <h5 class="text-white">TỔNG TIỀN </h5>
                                         </div>
                                         <div class="col-6 text-end">
-                                            <h5 class="text-white">@Model.OrderHeader.OrderTotal.ToString("c")</h5>
+                                            <h5 class="text-white">@Model.OrderHeader.OrderTotal.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
                                         </div>
                                     </div>
                                 </li>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TMDT.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using TMDT.DataAccess.Data;
 namespace TMDT.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250415134452_UpdateProductRemoveAuthor")]
+    partial class UpdateProductRemoveAuthor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -483,6 +486,10 @@ namespace TMDT.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
@@ -521,6 +528,7 @@ namespace TMDT.DataAccess.Migrations
                             CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "SWD9999001",
+                            ImageUrl = "",
                             IsActive = true,
                             ListPrice = 99.0,
                             Price = 90.0,
@@ -535,6 +543,7 @@ namespace TMDT.DataAccess.Migrations
                             CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "CAW777777701",
+                            ImageUrl = "",
                             IsActive = true,
                             ListPrice = 40.0,
                             Price = 30.0,
@@ -549,6 +558,7 @@ namespace TMDT.DataAccess.Migrations
                             CategoryId = 2,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "RITO5555501",
+                            ImageUrl = "",
                             IsActive = true,
                             ListPrice = 55.0,
                             Price = 50.0,
@@ -563,6 +573,7 @@ namespace TMDT.DataAccess.Migrations
                             CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "WS3333333301",
+                            ImageUrl = "",
                             IsActive = true,
                             ListPrice = 70.0,
                             Price = 65.0,
@@ -577,6 +588,7 @@ namespace TMDT.DataAccess.Migrations
                             CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "SOTJ1111111101",
+                            ImageUrl = "",
                             IsActive = true,
                             ListPrice = 30.0,
                             Price = 27.0,
@@ -591,6 +603,7 @@ namespace TMDT.DataAccess.Migrations
                             CategoryId = 3,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                             ISBN = "FOT000000001",
+                            ImageUrl = "",
                             IsActive = true,
                             ListPrice = 25.0,
                             Price = 23.0,
@@ -598,28 +611,6 @@ namespace TMDT.DataAccess.Migrations
                             Price50 = 22.0,
                             Title = "Leaves and Wonders"
                         });
-                });
-
-            modelBuilder.Entity("TMDT.Models.ProductImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("TMDT.Models.ShoppingCart", b =>
@@ -773,17 +764,6 @@ namespace TMDT.DataAccess.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("TMDT.Models.ProductImage", b =>
-                {
-                    b.HasOne("TMDT.Models.Product", "Product")
-                        .WithMany("ProductImages")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("TMDT.Models.ShoppingCart", b =>
                 {
                     b.HasOne("TMDT.Models.ApplicationUser", "ApplicationUser")
@@ -810,11 +790,6 @@ namespace TMDT.DataAccess.Migrations
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("TMDT.Models.Product", b =>
-                {
-                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

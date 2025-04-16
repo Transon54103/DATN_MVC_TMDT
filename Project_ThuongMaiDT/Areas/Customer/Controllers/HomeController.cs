@@ -24,15 +24,14 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
         public IActionResult Index(string searchTerm, string category, int pageNumber = 1, int pageSize = 12)
         {
             // Chỉ lấy sản phẩm có IsActive = true
-            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category")
-                .Where(p => p.IsActive == true);
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors,ProductImages").Where(p => p.IsActive == true);
 
             // Lọc theo từ khóa tìm kiếm
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 productList = productList.Where(p =>
                     (p.Title != null && p.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    (p.Author != null && p.Author.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    (p.Authors.Name != null && p.Authors.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
@@ -80,7 +79,9 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
         public IActionResult Details(int productId)
         {
             // Chỉ lấy sản phẩm nếu IsActive = true
-            var product = _unitOfWork.Product.Get(u => u.Id == productId && u.IsActive == true, includeProperties: "Category");
+            var product = _unitOfWork.Product
+                .Get(u => u.Id == productId && u.IsActive == true, includeProperties: "Category,Authors,ProductImages");
+
 
             if (product == null)
             {
@@ -91,8 +92,9 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
             // Chỉ lấy sản phẩm gợi ý có IsActive = true
             var recommendedProducts = _unitOfWork.Product
-                .GetAll(u => recommendedProductIds.Contains(u.Id) && u.IsActive == true)
+                .GetAll(u => recommendedProductIds.Contains(u.Id) && u.IsActive == true, includeProperties: "Authors,ProductImages")
                 .ToList();
+
 
             ShoppingCart cart = new()
             {
@@ -175,35 +177,64 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
 
         [HttpPost]
-        [Authorize]
         public IActionResult Details(ShoppingCart shoppingCart)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            shoppingCart.ApplicationUserId = userId;
-            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && 
-            u.ProductId == shoppingCart.ProductId);
-            if (cartFromDb != null)
+            if (User.Identity.IsAuthenticated)
             {
-                cartFromDb.Count += shoppingCart.Count;
-                //_unitOfWork.ShoppingCart.Update(shoppingCart); ?? ?ây nê?u du?ng câ?y na?y se? thêm mô?t c?? s?? d?? liê?u m??i v??i ID m??i ta?i
-                //vi? khi thêm 1 sa?n phâ?m shoppongcart se? t?? sinh kho?a va? ta?o mô?t csdl m??i nh?ng ta chi? muô?n câ?p nhâ?t mô?t csdl ta muô?n câ?p nhâ?t ch?? không câ?n thêm 
-                //d?? liê?u m??i
-                _unitOfWork.ShoppingCart.Update(cartFromDb);
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                shoppingCart.ApplicationUserId = userId;
+
+                ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == shoppingCart.ProductId);
+
+                if (cartFromDb != null)
+                {
+                    // Nếu đã có sản phẩm này thì cộng thêm số lượng
+                    cartFromDb.Count += shoppingCart.Count;
+                    _unitOfWork.ShoppingCart.Update(cartFromDb);
+                }
+                else
+                {
+                    // Nếu chưa có thì thêm mới
+                    _unitOfWork.ShoppingCart.Add(shoppingCart);
+                }
+
                 _unitOfWork.Save();
-                //vi?c không c?n g?i ph??ng th?c Update là do Entity Framework t? ??ng theo dõi các thay ??i ??i v?i các ??i t??ng ?ã n?p t? c? s? d? li?u
-                //và s? áp d?ng nh?ng thay ??i này khi b?n l?u vào c? s? d? li?u b?ng cách g?i _unitOfWork.Save().
+
+                // Cập nhật lại số lượng giỏ hàng trong session
+                int cartCount = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Sum(u => u.Count);
+                HttpContext.Session.SetInt32(SD.SessionCart, cartCount);
+
+                TempData["success"] = "Bạn đã thêm vào giỏ hàng";
+                return RedirectToAction(nameof(Index));
             }
             else
             {
-                _unitOfWork.ShoppingCart.Add(shoppingCart);
-                _unitOfWork.Save();
-                HttpContext.Session.SetInt32(SD.SessionCart,
-                    _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
+                // Nếu chưa đăng nhập — lưu vào session
+                var cartSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession") ?? new List<CartSessionItem>();
+
+                var existingItem = cartSession.FirstOrDefault(c => c.ProductId == shoppingCart.ProductId);
+                if (existingItem != null)
+                {
+                    existingItem.Count += shoppingCart.Count;
+                }
+                else
+                {
+                    cartSession.Add(new CartSessionItem
+                    {
+                        ProductId = shoppingCart.ProductId,
+                        Count = shoppingCart.Count
+                    });
+                }
+
+                // Cập nhật lại session
+                HttpContext.Session.SetObjectAsJson("CartSession", cartSession);
+
+                TempData["success"] = "Bạn đã thêm vào giỏ hàng";
+                return RedirectToAction(nameof(Index));
             }
-            TempData["success"] = "Bạn đã thêm vào giỏ hàng";
-            return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Privacy()
         {
             return View();

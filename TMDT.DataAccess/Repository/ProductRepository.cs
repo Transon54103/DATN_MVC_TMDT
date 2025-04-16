@@ -32,14 +32,14 @@ namespace TMDT.DataAccess.Repository
                 objFromDb.Price100 = obj.Price100;
                 objFromDb.Description = obj.Description;
                 objFromDb.CategoryId = obj.CategoryId;
-                objFromDb.Author = obj.Author;
                 objFromDb.AuthorId = obj.AuthorId;
                 objFromDb.IsActive = obj.IsActive;
                 objFromDb.Quantity = obj.Quantity;
-                if (obj.ImageUrl != null)
-                {
-                    objFromDb.ImageUrl = obj.ImageUrl;
-                }
+                //if (obj.ImageUrl != null)
+                //{
+                //    objFromDb.ImageUrl = obj.ImageUrl;
+                //}
+                objFromDb.ProductImages = obj.ProductImages;
             }
         }
     }

@@ -22,7 +22,7 @@ namespace TMDT.DataAccess.Repository
         public IOrderHeaderRepository OrderHeader { get; private set; }
         public IOrderDetailRepository OrderDetail { get; private set; }
         public IRecommendationRepository Recommendation { get; private set; } // ✅ Thêm mới
-
+        public IProductImageRepository ProductImage { get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -35,6 +35,7 @@ namespace TMDT.DataAccess.Repository
             OrderDetail = new OrderDetailRepository(_db);
             Recommendation = new RecommendationRepository(_db);
             Author = new AuthorRepository(_db);// ✅ Khởi tạo
+            ProductImage = new ProductImageRepository(_db);
         }
 
         public void Save()

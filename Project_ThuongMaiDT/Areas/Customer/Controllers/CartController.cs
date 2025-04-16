@@ -30,31 +30,49 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (!string.IsNullOrEmpty(userId))
+            {
+                // Nếu đã đăng nhập, xóa session giỏ hàng cũ của khách
+                HttpContext.Session.Remove("CartSession");
+            }
+
+            // Lấy giỏ hàng từ DB nếu có userId
             var cartFromDb = _unitOfWork.ShoppingCart.GetAll(
                 u => u.ApplicationUserId == userId && u.Product.IsActive == true,
-                includeProperties: "Product"
+                includeProperties: "Product.ProductImages"
             );
 
+            // Lấy giỏ hàng từ session nếu chưa đăng nhập
             var cartFromSession = HttpContext.Session.GetObjectFromJson<List<CartSessionItem>>("CartSession") ?? new List<CartSessionItem>();
 
             // Chuyển CartSessionItem thành ShoppingCart giả
-            var cartSessionConverted = cartFromSession.Select(item => new ShoppingCart
+            var cartSessionConverted = cartFromSession.Select(item =>
             {
-                Price = _unitOfWork.Product.Get(p => p.Id == item.ProductId).Price,
-                ProductId = item.ProductId,
-                Count = item.Count,
-                Product = _unitOfWork.Product.Get(p => p.Id == item.ProductId)
+                var productWithImages = _unitOfWork.Product.Get(
+                    p => p.Id == item.ProductId,
+                    includeProperties: "ProductImages"
+                );
+
+                return new ShoppingCart
+                {
+                    Price = productWithImages.Price,
+                    ProductId = item.ProductId,
+                    Count = item.Count,
+                    Product = productWithImages
+                };
             });
 
-            // Gộp lại
+            // Gộp 2 nguồn giỏ hàng lại
             var combinedCart = cartFromDb.Concat(cartSessionConverted);
 
+            // Tạo ViewModel
             ShoppingCartVM = new()
             {
                 ShoppingCartList = combinedCart,
                 OrderHeader = new()
             };
 
+            // Tính tổng giá trị và điều chỉnh giá theo số lượng
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 cart.Price = GetPriceBasedOnQuantity(cart);
@@ -63,6 +81,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
             return View(ShoppingCartVM);
         }
+
 
 
 
