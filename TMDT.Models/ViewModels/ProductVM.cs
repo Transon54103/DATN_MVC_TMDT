@@ -16,6 +16,7 @@ namespace TMDT.Models.ViewModels
         public IEnumerable<SelectListItem> CategoryList { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> AuthorList { get; set; }
-
+        [ValidateNever]
+        public IEnumerable<SelectListItem> PublisherList { get; set; }
     }
 }

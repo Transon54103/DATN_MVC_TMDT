@@ -23,7 +23,7 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Product> objproductlist = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors").ToList();
+            List<Product> objproductlist = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors,Publisher").ToList();
 
             return View(objproductlist);
         }
@@ -41,6 +41,11 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
                     Text = u.Name,
                     Value = u.AuthorId.ToString()
                 }),
+                PublisherList = _unitOfWork.Publisher.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }),
                 Product = new Product()
             };
             if (id == null || id == 0)
@@ -51,7 +56,7 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             else
             {
                 //update
-                productVM.Product = _unitOfWork.Product.Get(u => u.Id == id, includeProperties: "ProductImages");
+                productVM.Product = _unitOfWork.Product.Get(u => u.Id == id, includeProperties: "ProductImages,Publisher,Authors");
                 return View(productVM);
             }
         }
@@ -60,7 +65,6 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 if (productVM.Product.Id == 0)
                 {
                     _unitOfWork.Product.Add(productVM.Product);
@@ -69,64 +73,69 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
                 {
                     _unitOfWork.Product.Update(productVM.Product);
                 }
-                _unitOfWork.Save(); 
+
+                _unitOfWork.Save();
+
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (files != null)
+
+                if (files != null && files.Count > 0)
                 {
+                    string productPath = @"images\products\product-" + productVM.Product.Id;
+                    string finalPath = Path.Combine(wwwRootPath, productPath);
+
+                    if (!Directory.Exists(finalPath))
+                        Directory.CreateDirectory(finalPath);
 
                     foreach (IFormFile file in files)
                     {
                         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        string productPath = @"images\products\product-" + productVM.Product.Id;
-                        string finalPath = Path.Combine(wwwRootPath, productPath);
+                        string filePath = Path.Combine(finalPath, fileName);
 
-                        if (!Directory.Exists(finalPath))
-                            Directory.CreateDirectory(finalPath);
-
-                        using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
                             file.CopyTo(fileStream);
                         }
 
-                        ProductImage productImage = new()
+                        ProductImage productImage = new ProductImage
                         {
                             ImageUrl = @"\" + productPath + @"\" + fileName,
                             ProductId = productVM.Product.Id,
                         };
 
-                        if (productVM.Product.ProductImages == null)
-                            productVM.Product.ProductImages = new List<ProductImage>();
-
-                        productVM.Product.ProductImages.Add(productImage);
-
+                        _unitOfWork.ProductImage.Add(productImage);
                     }
 
-                    _unitOfWork.Product.Update(productVM.Product);
                     _unitOfWork.Save();
-
-
-
-
                 }
-                TempData["success"] = "Đã thêm sản phẩm mới thành công";
+
+                TempData["success"] = "Sản phẩm đã chỉnh sửa thành công!";
                 return RedirectToAction("Index");
             }
             else
             {
+                // Nếu ModelState không hợp lệ — nạp lại các SelectList
                 productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
                 });
+
                 productVM.AuthorList = _unitOfWork.Author.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.AuthorId.ToString()
                 });
-                return View(productVM);
 
+                productVM.PublisherList = _unitOfWork.Publisher.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                });
+
+                return View(productVM);
             }
         }
+
         public IActionResult DeleteImage(int imageId)
         {
             var imageToBeDeleted = _unitOfWork.ProductImage.Get(u => u.Id == imageId);

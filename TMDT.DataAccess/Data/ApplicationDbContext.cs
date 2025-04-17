@@ -12,6 +12,7 @@ namespace TMDT.DataAccess.Data
         {
 
         }
+        public DbSet<Publisher> Publisher { get; set; }
         public DbSet<Author> authors { get; set; }
         public DbSet<Category> categories { get; set; }
         public DbSet<Product> products { get; set; }
@@ -66,7 +67,7 @@ namespace TMDT.DataAccess.Data
                     CategoryId = 2,
                     //ImageUrl = "",
                     IsActive = true,
-                    AuthorId = 1
+                    AuthorId = 1,
                 },
                 new Product
                 {

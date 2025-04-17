@@ -58,6 +58,11 @@ namespace TMDT.Models
         [ValidateNever]
         public List<ProductImage> ProductImages { get; set; }
 
+        public int? PublisherId { get; set; }
+        [ForeignKey("PublisherId")]
+        [ValidateNever]
+        public Publisher Publisher { get; set; }
+
 
     }
 }

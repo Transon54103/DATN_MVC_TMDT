@@ -21,10 +21,11 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index(string searchTerm, string category, int pageNumber = 1, int pageSize = 12)
+        public IActionResult Index(string searchTerm, string category, string author, string publisher, int pageNumber = 1, int pageSize = 12)
         {
             // Chỉ lấy sản phẩm có IsActive = true
-            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors,ProductImages").Where(p => p.IsActive == true);
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors,Publisher,ProductImages")
+                .Where(p => p.IsActive == true);
 
             // Lọc theo từ khóa tìm kiếm
             if (!string.IsNullOrEmpty(searchTerm))
@@ -39,6 +40,18 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             if (!string.IsNullOrEmpty(category))
             {
                 productList = productList.Where(p => p.Category.Name == category);
+            }
+
+            // Lọc theo tác giả
+            if (!string.IsNullOrEmpty(author))
+            {
+                productList = productList.Where(p => p.Authors.Name == author);
+            }
+
+            // Lọc theo nhà xuất bản
+            if (!string.IsNullOrEmpty(publisher))
+            {
+                productList = productList.Where(p => p.Publisher.Name == publisher);
             }
 
             // Tính tổng số sản phẩm sau khi lọc
@@ -57,10 +70,27 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 .Distinct()
                 .ToList();
 
+            // Lấy danh sách tác giả
+            var authors = _unitOfWork.Author.GetAll()
+                .Select(a => a.Name)
+                .Distinct()
+                .ToList();
+
+            // Lấy danh sách nhà xuất bản
+            var publishers = _unitOfWork.Publisher.GetAll()
+                .Select(p => p.Name)
+                .Distinct()
+                .ToList();
+
             // Lưu thông tin vào ViewData để hiển thị trên giao diện
             ViewData["CurrentFilter"] = searchTerm;
             ViewData["Categories"] = categories;
+            ViewData["Authors"] = authors;
+            ViewData["Publishers"] = publishers;
+
             ViewData["SelectedCategory"] = category;
+            ViewData["SelectedAuthor"] = author;
+            ViewData["SelectedPublisher"] = publisher;
 
             var viewModel = new ProductViewModel
             {
@@ -71,6 +101,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
             return View(viewModel);
         }
+
 
 
 

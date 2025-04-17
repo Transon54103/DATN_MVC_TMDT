@@ -8,10 +8,10 @@ function loadDataTable() {
         "ajax": { url: '/admin/product/getall' },
         "columns": [
             { data: 'title', "width": "20%" },
-            { data: 'quantity', "width": "15%" },
-            { data: 'listPrice', "width": "10%" },
             { data: 'authors.name', "width": "15%" },
             { data: 'category.name', "width": "10%" },
+            { data: 'quantity', "width": "15%" },
+            { data: 'listPrice', "width": "10%" },
             {
                 data: 'isActive',
                 "render": function (data, type, row) {
@@ -29,13 +29,13 @@ function loadDataTable() {
 
                     return `<div class="w-100 btn-group" role="group">
                         <a href="/admin/product/upsert?id=${data}" class="btn btn-primary mx-1">
-                            <i class="bi bi-pencil-square"></i> Edit
+                            <i class="bi bi-pencil-square"></i> Sửa
                         </a>
                         <button class="btn ${approveClass} mx-1" onclick="UpdateIsActive(${data})">
                             <i class="bi bi-check-circle"></i> ${approveText}
                         </button>
                         <button onClick="Delete('/admin/product/delete/${data}')" class="btn btn-danger mx-1">
-                            <i class="bi bi-trash-fill"></i> Delete
+                            <i class="bi bi-trash-fill"></i> Xóa
                         </button>
                     </div>`;
                 },

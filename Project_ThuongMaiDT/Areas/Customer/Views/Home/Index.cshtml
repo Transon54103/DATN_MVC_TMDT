@@ -28,19 +28,6 @@
                             <div class="showing-product">
                                 <p>Hiển thị @((Model.CurrentPage - 1) * 12 + 1)–@(Model.CurrentPage * 12) của @Model.Products.Count() kết quả</p>
                             </div>
-                            <div class="sort-by">
-                                <select id="sorting" class="form-select" data-filter-sort="" data-filter-order="">
-                                    <option value="">Default sorting</option>
-                                    <option value="">Name (A - Z)</option>
-                                    <option value="">Name (Z - A)</option>
-                                    <option value="">Price (Low-High)</option>
-                                    <option value="">Price (High-Low)</option>
-                                    <option value="">Rating (Highest)</option>
-                                    <option value="">Rating (Lowest)</option>
-                                    <option value="">Model (A - Z)</option>
-                                    <option value="">Model (Z - A)</option>
-                                </select>
-                            </div>
                         </div>
                         <div class="row product-content product-store">
                             @foreach (var product in Model.Products)
@@ -86,7 +73,7 @@
                                 </div>
                             }
                         </div>
-                        <nav class="py-5" aria-label="Page navigation">
+                        <nav class="py-2" aria-label="Page navigation">
                             <ul class="pagination justify-content-center gap-4">
                                 <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                                     <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.CurrentPage - 1)">Prev</a>
@@ -104,7 +91,7 @@
                         </nav>
                     </main>
                     <aside class="col-md-3">
-                        <div class="sidebar ps-lg-5">
+                        <div class="sidebar ps-lg-2">
                             <div class="widget-menu">
                                 <div class="widget-search-bar position-relative">
                                     <form class="d-flex border rounded-3 p-2" role="search" method="get" asp-action="Index">
@@ -119,9 +106,11 @@
                                     <ul id="searchResults" class="list-group position-absolute w-100 mt-2 bg-white shadow rounded d-none"></ul>
                                 </div>
                             </div>
-                            <div class="widget-product-categories pt-5">
+
+                            <!-- Categories -->
+                            <div class="widget-product-categories pt-4">
                                 <div class="section-title overflow-hidden mb-2">
-                                    <h3 class="d-flex flex-column mb-0">Categories</h3>
+                                    <h3 class="d-flex flex-column mb-0">Thể loại</h3>
                                 </div>
                                 <ul class="product-categories mb-0 sidebar-list list-unstyled">
                                     <li class="cat-item">
@@ -133,17 +122,66 @@
                                     @foreach (var cat in (List<string>)ViewData["Categories"])
                                     {
                                         <li class="cat-item">
-                                            <a href="@Url.Action("Index", new { searchTerm = ViewData["CurrentFilter"], category = cat })"
+                                            <a href="@Url.Action("Index", new { searchTerm = ViewData["CurrentFilter"], category = cat, author = ViewData["SelectedAuthor"], publisher = ViewData["SelectedPublisher"] })"
                                                class="@(ViewData["SelectedCategory"]?.ToString() == cat ? "text-primary fw-bold" : "")">
                                                 @cat
                                             </a>
                                         </li>
                                     }
                                 </ul>
-
                             </div>
+
+                            <!-- Authors -->
+                            <div class="widget-product-categories pt-4">
+                                <div class="section-title overflow-hidden mb-2">
+                                    <h3 class="d-flex flex-column mb-0">Tác giả</h3>
+                                </div>
+                                <ul class="product-categories mb-0 sidebar-list list-unstyled">
+                                    <li class="cat-item">
+                                        <a href="@Url.Action("Index", new { searchTerm = ViewData["CurrentFilter"], category = ViewData["SelectedCategory"] })"
+                                           class="@(string.IsNullOrEmpty(ViewData["SelectedAuthor"]?.ToString()) ? "text-primary fw-bold" : "")">
+                                            All
+                                        </a>
+                                    </li>
+                                    @foreach (var author in (List<string>)ViewData["Authors"])
+                                    {
+                                        <li class="cat-item">
+                                            <a href="@Url.Action("Index", new { searchTerm = ViewData["CurrentFilter"], category = ViewData["SelectedCategory"], author = author, publisher = ViewData["SelectedPublisher"] })"
+                                               class="@(ViewData["SelectedAuthor"]?.ToString() == author ? "text-primary fw-bold" : "")">
+                                                @author
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            <!-- Publishers -->
+                            <div class="widget-product-categories pt-4">
+                                <div class="section-title overflow-hidden mb-2">
+                                    <h3 class="d-flex flex-column mb-0">Nhà Xuất Bản</h3>
+                                </div>
+                                <ul class="product-categories mb-0 sidebar-list list-unstyled">
+                                    <li class="cat-item">
+                                        <a href="@Url.Action("Index", new { searchTerm = ViewData["CurrentFilter"], category = ViewData["SelectedCategory"], author = ViewData["SelectedAuthor"] })"
+                                           class="@(string.IsNullOrEmpty(ViewData["SelectedPublisher"]?.ToString()) ? "text-primary fw-bold" : "")">
+                                            All
+                                        </a>
+                                    </li>
+                                    @foreach (var publisher in (List<string>)ViewData["Publishers"])
+                                    {
+                                        <li class="cat-item">
+                                            <a href="@Url.Action("Index", new { searchTerm = ViewData["CurrentFilter"], category = ViewData["SelectedCategory"], author = ViewData["SelectedAuthor"], publisher = publisher })"
+                                               class="@(ViewData["SelectedPublisher"]?.ToString() == publisher ? "text-primary fw-bold" : "")">
+                                                @publisher
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+
                         </div>
                     </aside>
+
                 </div>
             </div>
         </div>

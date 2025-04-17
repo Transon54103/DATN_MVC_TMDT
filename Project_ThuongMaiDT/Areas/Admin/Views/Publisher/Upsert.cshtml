@@ -1,62 +1,78 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layoutadmin.cshtml";
 }
-@model Author
+@model TMDT.Models.Publisher
 
 <div class="card shadow border-0 my-4">
     <div class="card-header bg-secondary bg-gradient py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">@(Model.AuthorId != 0 ? "Update" : "Create") Author</h2>
+                <h2 class="text-white py-2">@(Model.Id != 0 ? "Update" : "Create") Publisher</h2>
             </div>
         </div>
     </div>
     <div class="card-body p-4">
         <form method="post" class="row" enctype="multipart/form-data">
-            <input asp-for="AuthorId" hidden />
+            <input asp-for="Id" hidden />
             <input asp-for="ImageUrl" hidden />
 
             <div class="row">
                 <div class="col-10">
                     <div class="border p-3">
+                        <!-- Publisher Name -->
                         <div class="form-floating py-2 col-12">
                             <input asp-for="Name" class="form-control border-0 shadow" />
-                            <label asp-for="Name" class="ms-2">Tên tác giả</label>
+                            <label asp-for="Name" class="ms-2">Publisher Name</label>
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
+                        <!-- Publisher Image -->
                         <div class="form-floating py-2 col-12">
                             <input type="file" name="file" class="form-control border-0 shadow" />
-                            <label asp-for="ImageUrl" class="ms-2">Ảnh đại diện</label>
+                            <label asp-for="ImageUrl" class="ms-2">Publisher Image</label>
                             <span asp-validation-for="ImageUrl" class="text-danger"></span>
                         </div>
 
+                        <!-- Publisher Description -->
+                        <div class="form-floating py-2 col-12">
+                            <textarea asp-for="Description" class="form-control border-0 shadow" rows="4"></textarea>
+                            <label asp-for="Description" class="ms-2">Description</label>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit and Back Buttons -->
                         <div class="row pt-2">
                             <div class="col-6 col-md-3">
-                                @if (Model.AuthorId != 0)
+                                @if (Model.Id != 0)
                                 {
-                                    <button type="submit" class="btn btn-primary form-control">Cập nhật</button>
+                                    <button type="submit" class="btn btn-primary form-control">Update</button>
                                 }
                                 else
                                 {
-                                    <button type="submit" class="btn btn-primary form-control">Thêm mới</button>
+                                    <button type="submit" class="btn btn-primary form-control">Create</button>
                                 }
                             </div>
                             <div class="col-6 col-md-3">
-                                <a asp-controller="Author" asp-action="Index" class="btn btn-outline-secondary form-control">
-                                    Quay lại danh sách
+                                <a asp-controller="Publisher" asp-action="Index" class="btn btn-outline-secondary form-control">
+                                    Back to List
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-2">
-                    <img src="@Model.ImageUrl" width="100%"
-                         style="border-radius:5px; border: 1px solid #bbb9b9" />
+                    <!-- Display Publisher Image -->
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" width="100%" style="border-radius:5px; border: 1px solid #bbb9b9" />
+                    }
+                    else
+                    {
+                        <img src="~/images/default-image.png" width="100%" style="border-radius:5px; border: 1px solid #bbb9b9" />
+                    }
                 </div>
             </div>
         </form>
-
     </div>
 </div>
 
