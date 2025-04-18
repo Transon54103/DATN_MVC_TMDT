@@ -104,29 +104,39 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
 
 
-
-
-
         public IActionResult Details(int productId)
         {
-            // Chỉ lấy sản phẩm nếu IsActive = true
+            // Lấy sản phẩm theo productId và kiểm tra xem sản phẩm có tồn tại và có trạng thái IsActive = true không
             var product = _unitOfWork.Product
                 .Get(u => u.Id == productId && u.IsActive == true, includeProperties: "Category,Authors,ProductImages");
-
 
             if (product == null)
             {
                 return NotFound(); // Trả về 404 nếu sản phẩm không tồn tại hoặc không được duyệt
             }
 
-            var recommendedProductIds = _unitOfWork.Recommendation.GetRecommendedProducts(productId);
+            // Kiểm tra nếu người dùng đã mua sản phẩm này
+            string userId = User.Identity.Name; // Hoặc cách lấy UserId từ Authentication
+            var orderHeaders = _unitOfWork.OrderDetail.GetAll(od => od.OrderHeader.ApplicationUser.UserName == userId && od.ProductId == productId
+                                    && od.OrderHeader.OrderStatus == SD.StatusShipped && od.OrderHeader.PaymentStatus == SD.PaymentStatusApproved)
+                                                      .Select(od => od.OrderHeader)
+                                                      .Distinct()
+                                                      .ToList();
+            bool hasPurchased = orderHeaders.Any(); // Kiểm tra xem người dùng có đơn hàng chứa sản phẩm này
 
-            // Chỉ lấy sản phẩm gợi ý có IsActive = true
+            // Gợi ý sản phẩm
+            var recommendedProductIds = _unitOfWork.Recommendation.GetRecommendedProducts(productId);
             var recommendedProducts = _unitOfWork.Product
                 .GetAll(u => recommendedProductIds.Contains(u.Id) && u.IsActive == true, includeProperties: "Authors,ProductImages")
                 .ToList();
 
+            // Lấy danh sách review cho sản phẩm này
+            var reviews = _unitOfWork.ProductReview
+                .GetAll(u => u.ProductId == productId, includeProperties: "User")
+                .OrderByDescending(r => r.CreatedAt)
+                .ToList();
 
+            // Tạo ShoppingCart để giữ sản phẩm và số lượng
             ShoppingCart cart = new()
             {
                 Product = product,
@@ -134,10 +144,16 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 ProductId = productId,
             };
 
-            ViewBag.RecommendedProducts = recommendedProducts; // Gửi danh sách sản phẩm gợi ý đến View
+            // Gửi các dữ liệu cần sang View
+            ViewBag.RecommendedProducts = recommendedProducts;
+            ViewBag.Reviews = reviews;
+            ViewBag.HasPurchased = hasPurchased; // Truyền thông tin về việc mua sản phẩm sang view
+            ViewBag.IsLoggedIn = User.Identity.IsAuthenticated; // Truyền trạng thái đăng nhập
 
             return View(cart);
         }
+
+
 
 
         [HttpGet]

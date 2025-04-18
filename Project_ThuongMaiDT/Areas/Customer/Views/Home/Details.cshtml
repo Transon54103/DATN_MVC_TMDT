@@ -442,7 +442,7 @@
                         @* <button class="nav-link text-capitalize" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="false" tabindex="-1">Description</button>
                         <button class="nav-link text-capitalize" id="nav-information-tab" data-bs-toggle="tab" data-bs-target="#nav-information" type="button" role="tab" aria-controls="nav-information" aria-selected="false" tabindex="-1">Additional information</button>
                         <button class="nav-link text-capitalize" id="nav-shipping-tab" data-bs-toggle="tab" data-bs-target="#nav-shipping" type="button" role="tab" aria-controls="nav-shipping" aria-selected="false" tabindex="-1">Shipping &amp; Return</button> *@
-                       <h3 class="nav-link text-capitalize active" id="nav-review-tab" data-bs-toggle="tab" data-bs-target="#nav-review" type="button" role="tab" aria-controls="nav-review" aria-selected="true">Đánh giá</h3>
+                        <h3 class="mt-4 mb-0 fw-bold" id="nav-review-tab" data-bs-toggle="tab" data-bs-target="#nav-review" type="button" role="tab" aria-controls="nav-review" aria-selected="true" style="text-transform: none;">Đánh giá</h3>
                     </div>
                 </nav>
                 <div class="tab-content border-bottom py-4" id="nav-tabContent">
@@ -468,111 +468,106 @@
                         <p>Shipping</p>
                         <p>Pellentesque ultrices ut sem sit amet lacinia. Sed nisi dui, ultrices ut turpis pulvinar. Sed fringilla ex eget lorem consectetur, consectetur blandit lacus varius. Duis vel scelerisque elit, et vestibulum metus. Integer sit amet tincidunt tortor. Ut lacinia ullamcorper massa, a fermentum arcu vehicula ut. Ut efficitur faucibus dui Nullam tristique dolor eget turpis consequat varius. Quisque a interdum augue. Nam ut nibh mauris.</p>
                     </div>
-                    <div class="tab-pane fade active show" id="nav-review" role="tabpanel" aria-labelledby="nav-review-tab">
-                        <div class="review-box review-style d-flex gap-3 flex-column">
-                            <div class="review-item d-flex">
-                                <div class="image-holder me-2">
-                                    <img src="images/review-image1.jpg" alt="review" class="img-fluid rounded-3">
-                                </div>
-                                <div class="review-content">
-                                    <div class="rating text-primary">
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="review-header">
-                                        <span class="author-name fw-medium">Tom Johnson</span>
-                                        <span class="review-date">- 07/05/2022</span>
-                                    </div>
-                                    <p>Vitae tortor condimentum lacinia quis vel eros donec ac. Nam at lectus urna duis convallis convallis</p>
-                                </div>
-                            </div>
-                            <div class="review-item d-flex">
-                                <div class="image-holder me-2">
-                                    <img src="images/review-image2.jpg" alt="review" class="img-fluid rounded-3">
-                                </div>
-                                <div class="review-content">
-                                    <div class="rating text-primary">
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                        <svg class="star star-fill">
-                                            <use xlink:href="#star-fill"></use>
-                                        </svg>
-                                    </div>
-                                    <div class="review-header">
-                                        <span class="author-name fw-medium">Jenny Willis</span>
-                                        <span class="review-date">- 07/05/2022</span>
-                                    </div>
-                                    <p>Vitae tortor condimentum lacinia quis vel eros donec ac. Nam at lectus urna duis convallis convallis</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="add-review margin-small">
-                            <h3>Add a review</h3>
-                            <p>Your email address will not be published. Required fields are marked *</p>
-                            <div class="review-rating py-2">
-                                <span class="my-2">Your rating *</span>
-                                <div class="rating text-secondary">
-                                    <svg class="star star-fill">
-                                        <use xlink:href="#star-fill"></use>
-                                    </svg>
-                                    <svg class="star star-fill">
-                                        <use xlink:href="#star-fill"></use>
-                                    </svg>
-                                    <svg class="star star-fill">
-                                        <use xlink:href="#star-fill"></use>
-                                    </svg>
-                                    <svg class="star star-fill">
-                                        <use xlink:href="#star-fill"></use>
-                                    </svg>
-                                    <svg class="star star-fill">
-                                        <use xlink:href="#star-fill"></use>
-                                    </svg>
-                                </div>
-                            </div>
-                            <input type="file" class="jfilestyle py-3 border-0" data-text="Choose your file">
-                            <form id="form" class="d-flex gap-3 flex-wrap">
-                                <div class="w-100 d-flex gap-3">
-                                    <div class="w-50">
-                                        <input type="text" name="name" placeholder="Write your name here *" class="form-control w-100">
-                                    </div>
-                                    <div class="w-50">
-                                        <input type="text" name="email" placeholder="Write your email here *" class="form-control w-100">
-                                    </div>
-                                </div>
-                                <div class="w-100">
-                                    <textarea placeholder="Write your review here *" class="form-control w-100"></textarea>
-                                </div>
-                                <label class="w-100">
-                                    <input type="checkbox" required="" class="d-inline">
-                                    <span>Save my name, email, and website in this browser for the next time.</span>
-                                </label>
-                                <button type="submit" name="submit" class="btn my-3">Submit</button>
-                            </form>
-                        </div>
+<div class="tab-pane fade active show" id="nav-review" role="tabpanel" aria-labelledby="nav-review-tab">
+    <div class="review-box review-style d-flex gap-3 flex-column">
+        @if (ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
+        {
+            foreach (var review in ViewBag.Reviews)
+            {
+                <div class="review-item d-flex">
+                    <div class="image-holder me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                        </svg>
                     </div>
+
+                    <div class="review-content">
+                        <div class="rating text-primary">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg class="star">
+                                        <use xlink:href="#star"></use>
+                                    </svg>
+                                }
+                            }
+                        </div>
+                        <div class="review-header">
+                            <span class="author-name fw-medium">@review.User.Name</span>
+                            <span class="review-date">- @review.CreatedAt.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <p>@review.Comment</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+                                <div class="center-container">
+                                    <h6 class="mt-4 mb-0 fw-bold" style="text-transform: none;">Chưa có đánh giá</h6>
+                                </div>
+        }
+    </div>
+
+                        <div class="center-container">
+                            @if (ViewBag.IsLoggedIn == null || !ViewBag.IsLoggedIn)
+                            {
+                                <!-- Nếu chưa đăng nhập -->
+                                <h6 class="mt-4 mb-0 fw-bold" style="text-transform: none;">Bạn cần <a asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a> để đánh giá sản phẩm</h6>
+                            }
+                            else if (ViewBag.HasPurchased == false)
+                            {
+                                <!-- Nếu người dùng đã đăng nhập nhưng chưa mua sản phẩm -->
+                                <h6 class="mt-4 mb-0 fw-bold" style="text-transform: none;">Bạn cần mua sản phẩm này để có thể đánh giá</h6>
+                            }
+                            else
+                            {
+                                <!-- Nếu người dùng đã đăng nhập và đã mua sản phẩm -->
+                                <h6 class="mt-4 mb-0 fw-bold" style="text-transform: none;">Đánh giá sản phẩm của bạn</h6>
+                                @using (Html.BeginForm("Create", "ProductReview", FormMethod.Post, new { area = "Customer", id = "reviewForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(m => m.ProductId)
+
+                                    <div class="review-rating py-2">
+                                        <span class="my-2">Độ hài lòng</span>
+                                        <div class="custom-rating d-flex gap-1" style="display: flex; gap: 0.25rem;">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <label style="position: relative; display: inline-block; cursor: pointer; transition: transform 0.2s ease;"
+                                                       onmouseover="this.children[1].style.color='#ffcc00'; this.style.transform='scale(1.2)';"
+                                                       onmouseout="let input=this.children[0];
+                               if(!input.checked){this.children[1].style.color='rgb(204,204,204)';}
+                               this.style.transform='scale(1)';">
+                                                    <input type="radio" name="Rating" value="@i" required
+                                                           style="display: none;" />
+                                                    <svg style="width: 30px; height: 30px; color: rgb(204,204,204); transition: color 0.3s ease;">
+                                                        <use xlink:href='#star-fill'></use>
+                                                    </svg>
+                                                </label>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="w-100">
+                                        <textarea name="Comment" placeholder="Viết đánh giá" class="form-control w-100" required></textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn my-3">Gửi</button>
+                                }
+                            }
+                        </div>
+
+</div>
+
                 </div>
             </div>
         </div>
@@ -626,6 +621,87 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("#reviewForm");
+            const ratingInputs = form.querySelectorAll('input[name="Rating"]');
+            const reviewBox = document.querySelector(".review-box");
+
+            // Gửi form bằng AJAX
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            addReview(data.review);
+                            form.reset();
+                            resetStars();
+                        } else {
+                            alert(data.message || "Có lỗi xảy ra!");
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("Đã xảy ra lỗi khi gửi đánh giá.");
+                    });
+            });
+
+            // Thêm review mới vào box
+            function addReview(review) {
+                const reviewItem = document.createElement("div");
+                reviewItem.classList.add("review-item", "d-flex");
+
+                reviewItem.innerHTML = `
+                                    <div class="image-holder me-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                                        </svg>
+                                    </div>
+
+                                    <div class="review-content">
+                                        <div class="rating text-primary">
+                                            ${renderStars(review.rating)}
+                                        </div>
+                                        <div class="review-header">
+                                            <span class="author-name fw-medium">${review.userName}</span>
+                                            <span class="review-date">- ${review.createdAt}</span>
+                                        </div>
+                                        <p>${review.comment}</p>
+                                    </div>
+                                `;
+
+                reviewBox.prepend(reviewItem);
+            }
+
+            // Render sao cho review mới
+            function renderStars(rating) {
+                let html = "";
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        html += `<svg class="star star-fill"><use xlink:href="#star-fill"></use></svg>`;
+                    } else {
+                        html += `<svg class="star"><use xlink:href="#star"></use></svg>`;
+                    }
+                }
+                return html;
+            }
+
+            // Reset màu sao
+            function resetStars() {
+                ratingInputs.forEach(input => {
+                    input.nextElementSibling.style.color = "rgb(204,204,204)";
+                });
+            }
+        });
+    </script>
 }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
@@ -657,4 +733,83 @@
             });
         });
     });
+</script>
+<style>
+    .custom-star-label {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .custom-star-input {
+        display: none; /* Ẩn radio button */
+    }
+
+    .custom-star {
+        width: 30px;
+        height: 30px;
+        fill: rgb(204, 204, 204); /* Màu sao chưa chọn (màu xám) */
+        transition: fill 0.3s ease;
+    }
+
+    /* Sao được chọn sẽ có màu vàng */
+    .custom-star-input:checked ~ .custom-star {
+        fill: #ffcc00; /* Màu vàng khi chọn */
+    }
+
+    /* Hiệu ứng hover: khi hover vào, sao sẽ chuyển thành màu vàng */
+    .custom-star-label:hover .custom-star,
+    .custom-star-input:hover ~ .custom-star {
+        fill: #ffcc00; /* Màu vàng khi hover */
+    }
+
+    /* Hiệu ứng phóng to khi hover */
+    .custom-star-label:hover {
+        transform: scale(1.2);
+    }
+
+
+
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ratingGroups = document.querySelectorAll('.custom-rating');
+
+        ratingGroups.forEach(group => {
+            const labels = group.querySelectorAll('label');
+            const radios = group.querySelectorAll('input[type=radio]');
+
+            labels.forEach((label, index) => {
+                const input = label.querySelector('input');
+                const star = label.querySelector('svg');
+
+                label.addEventListener('mouseover', () => {
+                    // tô vàng từ 0 tới index
+                    for (let i = 0; i <= index; i++) {
+                        labels[i].querySelector('svg').style.color = '#ffcc00';
+                    }
+                    label.style.transform = 'scale(1.2)';
+                });
+
+                label.addEventListener('mouseout', () => {
+                    label.style.transform = 'scale(1)';
+                    updateStars();
+                });
+
+                input.addEventListener('click', () => {
+                    updateStars();
+                });
+            });
+
+            function updateStars() {
+                const selectedValue = group.querySelector('input[type=radio]:checked')?.value || 0;
+                labels.forEach((label, i) => {
+                    const star = label.querySelector('svg');
+                    star.style.color = (i < selectedValue) ? '#ffcc00' : 'rgb(204,204,204)';
+                });
+            }
+        });
+    });
+
 </script>
