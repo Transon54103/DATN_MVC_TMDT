@@ -69,6 +69,7 @@ namespace TMDT.DataAccess.Data
                     //ImageUrl = "",
                     IsActive = true,
                     AuthorId = 1,
+                    PublisherId=1
                 },
                 new Product
                 {
@@ -83,7 +84,8 @@ namespace TMDT.DataAccess.Data
                     CategoryId = 2,
                     //ImageUrl = "",
                     IsActive = true,
-                    AuthorId = 1
+                    AuthorId = 1,
+                    PublisherId = 1
 
                 },
                 new Product
@@ -99,7 +101,8 @@ namespace TMDT.DataAccess.Data
                     CategoryId = 2,
                     //ImageUrl = "",
                     IsActive = true,
-                    AuthorId = 1
+                    AuthorId = 1,
+                    PublisherId = 1
 
                 },
                 new Product
@@ -115,7 +118,8 @@ namespace TMDT.DataAccess.Data
                     CategoryId = 3,
                     //ImageUrl = "",
                     IsActive = true,
-                    AuthorId = 1
+                    AuthorId = 1,
+                    PublisherId = 1
 
                 },
                 new Product
@@ -131,7 +135,8 @@ namespace TMDT.DataAccess.Data
                     CategoryId = 3,
                     //ImageUrl = "",
                     IsActive = true,
-                    AuthorId = 1
+                    AuthorId = 1,
+                    PublisherId = 1
 
                 },
                 new Product
@@ -147,7 +152,8 @@ namespace TMDT.DataAccess.Data
                     CategoryId = 3,
                     //ImageUrl = "",
                     IsActive = true,
-                    AuthorId = 1
+                    AuthorId = 1,
+                    PublisherId = 1
                 }
                 );
         }

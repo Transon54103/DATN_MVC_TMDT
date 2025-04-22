@@ -23,9 +23,9 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
 
         public IActionResult Index(string searchTerm, string category, string author, string publisher, int pageNumber = 1, int pageSize = 12)
         {
-            // Chỉ lấy sản phẩm có IsActive = true
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,Authors,Publisher,ProductImages")
-                .Where(p => p.IsActive == true);
+                .Where(p => p.IsActive == true && p.Quantity > 0);
+
 
             // Lọc theo từ khóa tìm kiếm
             if (!string.IsNullOrEmpty(searchTerm))

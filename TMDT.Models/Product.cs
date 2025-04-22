@@ -40,7 +40,7 @@ namespace TMDT.Models
         [Range(1, 100000000)]
         public double Price100 { get; set; }
         public int CategoryId { get; set; }
-        public int? AuthorId { get; set; }
+        public int AuthorId { get; set; }
         [ForeignKey("AuthorId")]  // Thiết lập mối quan hệ khóa ngoại
         [ValidateNever]
         public Author Authors { get; set; }
@@ -58,7 +58,7 @@ namespace TMDT.Models
         [ValidateNever]
         public List<ProductImage> ProductImages { get; set; }
 
-        public int? PublisherId { get; set; }
+        public int PublisherId { get; set; }
         [ForeignKey("PublisherId")]
         [ValidateNever]
         public Publisher Publisher { get; set; }
