@@ -1,60 +1,74 @@
 ﻿@page
 @model ExternalLoginModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Đăng ký tài khoản";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2 id="external-login-title">Associate your @Model.ProviderDisplayName account.</h2>
-<hr />
+@if (User.IsInRole(SD.Role_Admin))
+{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
 
-<p id="external-login-description" class="text-info">
-    You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
-</p>
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg p-4 border-0 rounded-4" style="max-width: 500px; width: 100%;">
+        <div class="card-body">
+            <div class="mb-3 text-center">
+                <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
+            </div>
+            <h2 class="fw-bold text-center">@ViewData["Title"]</h2>
+            <p class="text-center text-primary mb-4">
+                Bạn đã đăng nhập thành công với <strong>@Model.ProviderDisplayName</strong>.
+                Vui lòng nhập thông tin bên dưới để hoàn tất đăng ký tài khoản.
+            </p>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
-                <label asp-for="Input.Email" class="form-label"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" autocomplete="email" placeholder="Please enter your name." />
-                <label asp-for="Input.Name" class="form-label"></label>
-                <span asp-validation-for="Input.Name" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="email" placeholder="Please enter your phone number." />
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.StreetAddress" class="form-control" autocomplete="email" placeholder="Please enter your Street Address." />
-                <label asp-for="Input.StreetAddress" class="form-label"></label>
-                <span asp-validation-for="Input.StreetAddress" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.City" class="form-control" autocomplete="email" placeholder="Please enter your city." />
-                <label asp-for="Input.City" class="form-label"></label>
-                <span asp-validation-for="Input.City" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.State" class="form-control" autocomplete="email" placeholder="Please enter your state." />
-                <label asp-for="Input.State" class="form-label"></label>
-                <span asp-validation-for="Input.State" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.PostalCode" class="form-control" autocomplete="email" placeholder="Please enter your postal code." />
-                <label asp-for="Input.PostalCode" class="form-label"></label>
-                <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
+            <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" placeholder="Email" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Name" class="form-control" placeholder="Họ và tên" />
+                    <label asp-for="Input.Name">Họ và tên</label>
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Số điện thoại" />
+                    <label asp-for="Input.PhoneNumber">Số điện thoại</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.StreetAddress" class="form-control" placeholder="Địa chỉ" />
+                    <label asp-for="Input.StreetAddress">Địa chỉ</label>
+                    <span asp-validation-for="Input.StreetAddress" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.City" class="form-control" placeholder="Thành phố" />
+                    <label asp-for="Input.City">Thành phố</label>
+                    <span asp-validation-for="Input.City" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.State" class="form-control" placeholder="Tỉnh/Thành" />
+                    <label asp-for="Input.State">Tỉnh/Thành</label>
+                    <span asp-validation-for="Input.State" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PostalCode" class="form-control" placeholder="Mã bưu chính" />
+                    <label asp-for="Input.PostalCode">Mã bưu chính</label>
+                    <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="w-100 btn btn-lg btn-primary">Hoàn tất đăng ký</button>
+            </form>
+        </div>
     </div>
 </div>
 

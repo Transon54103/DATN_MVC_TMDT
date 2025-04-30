@@ -84,10 +84,6 @@ app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=TopSellingBooks}/{id?}");
-
-
-
-
 app.Run();
 void SeedDatabase()
 {
