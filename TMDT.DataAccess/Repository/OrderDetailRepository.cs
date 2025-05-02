@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TMDT.DataAccess.Data;
 using TMDT.DataAccess.Repository.IRepository;
 using TMDT.Models;
+using TMDT.Utility;
 
 namespace TMDT.DataAccess.Repository
 {
@@ -23,6 +24,8 @@ namespace TMDT.DataAccess.Repository
         public IEnumerable<Product> GetTopSellingProducts(int top)
         {
             var topProducts = _db.OrderDetails
+                .Where(od => od.OrderHeader.OrderStatus == SD.StatusComplete
+                          && od.OrderHeader.PaymentStatus == SD.PaymentStatusApproved)
                 .GroupBy(od => od.ProductId)
                 .Select(g => new
                 {
@@ -31,7 +34,7 @@ namespace TMDT.DataAccess.Repository
                 })
                 .OrderByDescending(g => g.TotalSold)
                 .Take(top)
-                .ToList(); // Thực thi trên SQL Server
+                .ToList();
 
             // Lấy thông tin sản phẩm tương ứng
             var productIds = topProducts.Select(p => p.ProductId).ToList();

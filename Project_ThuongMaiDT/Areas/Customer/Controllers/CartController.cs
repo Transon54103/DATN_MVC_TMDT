@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Stripe;
 using Stripe.Checkout;
 using System.Security.Claims;
 using TMDT.DataAccess.Repository.IRepository;
@@ -152,12 +153,16 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             string userId = null;
             List<ShoppingCart> cartList = new();
             double cartTotal = 0;
+            ApplicationUser applicationUser = null;
 
             // Xác định user
             if (User.Identity.IsAuthenticated)
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
                 userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                // Lấy thông tin người dùng
+                applicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
 
                 // Lấy giỏ hàng từ DB
                 cartList = _unitOfWork.ShoppingCart.GetAll(
@@ -182,14 +187,11 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 }).ToList();
             }
 
-            // Kiểm tra giỏ có hàng không
             if (!cartList.Any())
             {
-                // Nếu rỗng quay về giỏ
                 return RedirectToAction("Summary");
             }
 
-            // Tính tổng tiền
             foreach (var cart in cartList)
             {
                 if (cart.Price == 0)
@@ -199,12 +201,10 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 cartTotal += cart.Count * cart.Price;
             }
 
-            // Tạo order header
             var orderHeader = new OrderHeader()
             {
-				//ApplicationUser.Email = Email,
-				GuestEmail = orderHeaderVM.OrderHeader.GuestEmail,
-				ApplicationUserId = userId,
+                GuestEmail = orderHeaderVM.OrderHeader.GuestEmail,
+                ApplicationUserId = userId,
                 Name = orderHeaderVM.OrderHeader.Name,
                 PhoneNumber = orderHeaderVM.OrderHeader.PhoneNumber,
                 StreetAddress = orderHeaderVM.OrderHeader.StreetAddress,
@@ -217,10 +217,21 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 OrderStatus = SD.StatusPending
             };
 
+            // Logic nếu là người dùng thuộc công ty
+            if (applicationUser != null && applicationUser.CompanyId.GetValueOrDefault() > 0)
+            {
+                orderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+                orderHeader.OrderStatus = SD.StatusApproved;
+            }
+            string paymentMethod = Request.Form["paymentMethod"];
+            if (paymentMethod == "COD")
+            {
+                orderHeader.PaymentStatus = "Thanh toán bằng tiền mặt";
+                orderHeader.OrderStatus = SD.StatusApproved;
+            }
             _unitOfWork.OrderHeader.Add(orderHeader);
             _unitOfWork.Save();
 
-            // Tạo order detail
             foreach (var cart in cartList)
             {
                 var orderDetail = new OrderDetail()
@@ -231,13 +242,24 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                     Count = cart.Count
                 };
                 _unitOfWork.OrderDetail.Add(orderDetail);
+
                 var product = _unitOfWork.Product.Get(p => p.Id == cart.ProductId);
                 product.Quantity -= cart.Count;
                 _unitOfWork.Product.Update(product);
             }
+
             _unitOfWork.Save();
 
-            // Tạo Stripe session
+            // Nếu là công ty => không thanh toán online
+            if (applicationUser != null && applicationUser.CompanyId.GetValueOrDefault() > 0)
+            {
+                return RedirectToAction("OrderConfirmation", new { id = orderHeader.Id });
+            }
+            if (paymentMethod == "COD")
+            {
+                return RedirectToAction("OrderConfirmation", new { id = orderHeader.Id });
+            }
+            // Thanh toán Stripe
             var domain = $"{Request.Scheme}://{Request.Host.Value}/";
             var options = new SessionCreateOptions
             {
@@ -246,7 +268,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = (long)(item.Price),
+                        UnitAmount = (long)(item.Price), // nhân 100 để đúng đơn vị
                         Currency = "vnd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -263,13 +285,13 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             var service = new SessionService();
             Session session = service.Create(options);
 
-            // Lưu sessionId
             orderHeader.SessionId = session.Id;
+            orderHeader.PaymentIntentId = session.PaymentIntentId;
             _unitOfWork.Save();
 
-            // Redirect tới Stripe Checkout
             return Redirect(session.Url);
         }
+
 
 
         public IActionResult OrderConfirmation(int id)

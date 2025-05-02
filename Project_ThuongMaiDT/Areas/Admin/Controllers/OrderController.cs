@@ -79,7 +79,26 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             TempData["Success"] = "Chi tiết đơn hàng được cập nhật thành công.";
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
         }
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult CompleteOrder()
+        {
+            var orderHeaderFromDb = _unitOfWork.OrderHeader
+                .Get(u => u.Id == OrderVM.OrderHeader.Id, includeProperties: "ApplicationUser");
+            if (orderHeaderFromDb.ApplicationUser.CompanyId == null)
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.Id, SD.StatusComplete, SD.PaymentStatusApproved);
+                _unitOfWork.Save();
+            }
+            else
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.Id, SD.StatusComplete, SD.PaymentStatusDelayedPayment);
+                _unitOfWork.Save();
+            }
 
+            TempData["Success"] = "Đơn hàng đã được cập nhật thành công";
+            return RedirectToAction(nameof(Details), new {orderId = OrderVM.OrderHeader.Id});
+        }
         [HttpPost]
         [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
         public IActionResult ShipOrder()
@@ -109,7 +128,7 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
 
             var orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id);
 
-            if (orderHeader.PaymentStatus == SD.PaymentStatusApproved)
+            if (orderHeader.PaymentStatus == SD.PaymentStatusApproved && orderHeader.PaymentIntentId != null)
             {
                 var options = new RefundCreateOptions
                 {
@@ -210,48 +229,74 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             return View(orderHeaderId);
         }
         [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
-        public IActionResult SalesStatistics(int? startMonth, int? startYear, int? endMonth, int? endYear)
+        public IActionResult SalesStatistics(DateTime? startDate, DateTime? endDate)
         {
             if (!User.IsInRole(SD.Role_Admin) && !User.IsInRole(SD.Role_Employee))
             {
                 TempData["ErrorMessage"] = "Bạn không có quyền truy cập trang này.";
-                return RedirectToAction("Index", "TopSellingBooks"); // Chuyển hướng về trang chủ
+                return RedirectToAction("Index", "TopSellingBooks");
             }
+
             DateTime today = DateTime.Today;
-            DateTime defaultStart = new DateTime(today.Year, today.Month, 1).AddMonths(-6); // Mặc định 7 tháng gần nhất
-            DateTime defaultEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            DateTime defaultStart = today.AddDays(-30);
+            DateTime defaultEnd = today;
 
-            DateTime startDate = (startMonth.HasValue && startYear.HasValue)
-                ? new DateTime(startYear.Value, startMonth.Value, 1)
-                : defaultStart;
+            DateTime fromDate = startDate ?? defaultStart;
+            DateTime toDate = endDate ?? defaultEnd;
 
-            DateTime endDate = (endMonth.HasValue && endYear.HasValue)
-                ? new DateTime(endYear.Value, endMonth.Value, DateTime.DaysInMonth(endYear.Value, endMonth.Value))
-                : defaultEnd;
-
-            var completedOrders = _unitOfWork.OrderHeader
-                .GetAll(u => u.OrderStatus == SD.StatusShipped && u.ShippingDate >= startDate && u.ShippingDate <= endDate && u.PaymentStatus == SD.PaymentStatusApproved)
-                .GroupBy(o => new { o.ShippingDate.Year, o.ShippingDate.Month }) // Nhóm theo tháng
-                .Select(g => new
-                {
-                    Thang = new DateTime(g.Key.Year, g.Key.Month, 1),
-                    DoanhThu = g.Sum(o => (decimal)o.OrderTotal)
-                })
-                .OrderBy(x => x.Thang)
+            // 1. Lấy các đơn hoàn tất
+            var completedOrderHeaders = _unitOfWork.OrderHeader
+                .GetAll(u => u.OrderStatus == SD.StatusComplete
+                          && u.ShippingDate >= fromDate
+                          && u.ShippingDate <= toDate
+                          && u.PaymentStatus == SD.PaymentStatusApproved)
                 .ToList();
 
-            // Truyền dữ liệu cho View
-            ViewBag.Labels = completedOrders.Select(x => x.Thang.ToString("MM/yyyy")).ToList();
-            ViewBag.Data = completedOrders.Select(x => x.DoanhThu).ToList();
-            ViewBag.StartMonth = startMonth ?? defaultStart.Month;
-            ViewBag.StartYear = startYear ?? defaultStart.Year;
-            ViewBag.EndMonth = endMonth ?? defaultEnd.Month;
-            ViewBag.EndYear = endYear ?? defaultEnd.Year;
+            var orderIds = completedOrderHeaders.Select(o => o.Id).ToList();
 
-            var totalRevenue = completedOrders.Sum(x => x.DoanhThu);
+            // 2. Lấy các chi tiết đơn hàng liên quan và bao gồm Product (để lấy ListPrice = giá vốn)
+            var orderDetails = _unitOfWork.OrderDetail
+                .GetAll(od => orderIds.Contains(od.OrderHeaderId), includeProperties: "Product")
+                .ToList();
 
-            return View(totalRevenue);
+            // 3. Tính doanh thu và lợi nhuận theo ngày
+            var statistics = completedOrderHeaders
+                .GroupBy(o => o.ShippingDate.Date)
+                .Select(g =>
+                {
+                    var dayOrders = g.ToList();
+                    var dayOrderIds = dayOrders.Select(o => o.Id).ToList();
+
+                    decimal revenue = (decimal)dayOrders.Sum(o => o.OrderTotal);
+
+                    var cost = orderDetails
+                        .Where(od => dayOrderIds.Contains(od.OrderHeaderId))
+                        .Sum(od => od.Count * (decimal)od.Product.ListPrice);
+
+                    decimal profit = revenue - cost;
+
+                    return new
+                    {
+                        Ngay = g.Key,
+                        DoanhThu = revenue,
+                        LoiNhuan = profit
+                    };
+                })
+                .OrderBy(x => x.Ngay)
+                .ToList();
+
+            // 4. Truyền ra View
+            ViewBag.Labels = statistics.Select(x => x.Ngay.ToString("dd/MM/yyyy")).ToList();
+            ViewBag.Data_DoanhThu = statistics.Select(x => x.DoanhThu).ToList();
+            ViewBag.Data_LoiNhuan = statistics.Select(x => x.LoiNhuan).ToList();
+            ViewBag.StartDate = fromDate.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = toDate.ToString("yyyy-MM-dd");
+
+            ViewBag.TotalProfit = statistics.Sum(x => x.LoiNhuan);
+
+            return View(statistics.Sum(x => x.DoanhThu));
         }
+
 
 
 

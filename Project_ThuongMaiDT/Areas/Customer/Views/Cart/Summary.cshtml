@@ -1,144 +1,168 @@
 ﻿@model ShoppingCartVM
 <form method="post">
-	<br />
+    <br />
+    <div class="container">
+        <div class="card shadow border-0">
 
-	<div class="container">
-		<div class="card shadow border-0">
+            <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
+                <div class="row px-4">
+                    <div class="col-6">
+                        <h5 class="pt-2 text-primary mb-3">
+                            Tóm tắt đơn hàng
+                        </h5>
+                    </div>
+                    <div class="col-6 text-end">
+                        <a asp-action="Index" class="btn btn-outline-danger btn-sm">Quay lại giỏ hàng</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container rounded p-2">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 pb-4">
+                            <div class="row">
+                                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-info">Chi tiết giao hàng:</span>
+                                </h4>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Tên</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.Name" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Email</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="OrderHeader.GuestEmail" class="form-control" />
+                                        <span asp-validation-for="OrderHeader.GuestEmail" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Điện thoại</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Địa chỉ đường</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.StreetAddress" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Thành phố</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.City" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.City" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Tỉnh/Bang</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.State" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.State" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Mã bưu điện</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.PostalCode" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.PostalCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-5 offset-lg-1">
+                            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-info">Tóm tắt đơn hàng:</span>
+                            </h4>
+                            @using System.Globalization
 
-			<div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
-				<div class="row px-4">
-					<div class="col-6">
-						<h5 class="pt-2 text-primary mb-3">
-							Tóm tắt đơn hàng
-						</h5>
-					</div>
-					<div class="col-6 text-end">
-						<a asp-action="Index" class="btn btn-outline-danger btn-sm">Quay lại giỏ hàng</a>
-					</div>
-				</div>
-			</div>
-			<div class="card-body">
-				<div class="container rounded p-2">
-					<div class="row">
-						<div class="col-12 col-lg-6 pb-4">
-							<div class="row">
-								<h4 class="d-flex justify-content-between align-items-center mb-3">
-									<span class="text-info">Chi tiết giao hàng:</span>
-								</h4>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Tên</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.Name" class="form-control" />
-									<span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
-								</div>
-							</div>
-							@if (!User.Identity.IsAuthenticated)
-							{
-								<div class="row my-1">
-									<div class="col-3">
-										<label>Email</label>
-									</div>
-									<div class="col-9">
-										<input asp-for="OrderHeader.GuestEmail" class="form-control" />
-										<span asp-validation-for="OrderHeader.GuestEmail" class="text-danger"></span>
-									</div>
-								</div>
-							}
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Điện thoại</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.PhoneNumber" class="form-control" />
-									<span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Địa chỉ đường</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.StreetAddress" class="form-control" />
-									<span asp-validation-for="OrderHeader.StreetAddress" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Thành phố</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.City" class="form-control" />
-									<span asp-validation-for="OrderHeader.City" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Tỉnh/Bang</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.State" class="form-control" />
-									<span asp-validation-for="OrderHeader.State" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="row my-1">
-								<div class="col-3">
-									<label>Mã bưu điện</label>
-								</div>
-								<div class="col-9">
-									<input asp-for="OrderHeader.PostalCode" class="form-control" />
-									<span asp-validation-for="OrderHeader.PostalCode" class="text-danger"></span>
-								</div>
-							</div>
-						</div>
-						<div class="col-12 col-lg-5 offset-lg-1">
-							<h4 class="d-flex justify-content-between align-items-center mb-3">
-								<span class="text-info">Tóm tắt đơn hàng:</span>
-							</h4>
-							@using System.Globalization
+                            <ul class="list-group mb-3">
+                                @foreach (var details in Model.ShoppingCartList)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="my-0">@details.Product.Title</h6>
+                                            <small class="my-0">Số lượng: @details.Count</small>
+                                        </div>
+                                        <span class="text-info">@((details.Price * details.Count).ToString("c0", CultureInfo.GetCultureInfo("vi-VN")))</span>
+                                    </li>
+                                }
 
-							<ul class="list-group mb-3">
-								@foreach (var details in Model.ShoppingCartList)
-								{
-									<li class="list-group-item d-flex justify-content-between">
-										<div>
-											<h6 class="my-0">@details.Product.Title</h6>
-											<small class="my-0">Số lượng: @details.Count</small>
-										</div>
-										<span class="text-info">@((details.Price * details.Count).ToString("c0", CultureInfo.GetCultureInfo("vi-VN")))</span>
-									</li>
-								}
+                                <li class="list-group-item d-flex justify-content-between bg-light">
+                                    <small class="text-info">Tổng (VNĐ)</small>
+                                    <strong class="text-info">@Model.OrderHeader.OrderTotal.ToString("c0", CultureInfo.GetCultureInfo("vi-VN"))</strong>
+                                </li>
+                            </ul>
 
-								<li class="list-group-item d-flex justify-content-between bg-light">
-									<small class="text-info">Tổng (VNĐ)</small>
-									<strong class="text-info">@Model.OrderHeader.OrderTotal.ToString("c0", CultureInfo.GetCultureInfo("vi-VN"))</strong>
-								</li>
-							</ul>
-
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="card-footer">
-				<div class="row">
-					<div class="col-12 col-md-8 pt-2">
-						<p style="color:maroon; font-size:14px;">
-							Ngày dự kiến giao hàng:
-							@DateTime.Now.AddDays(7).ToShortDateString() - @DateTime.Now.AddDays(14).ToShortDateString()
-						</p>
-					</div>
-					<div class="col-12 col-md-4">
-						<button type="submit" value="Đặt hàng" class="btn btn-primary form-control">Thanh Toán</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light rounded shadow-sm p-4">
+                @if (!User.IsInRole(SD.Role_Company))
+                {
+                    <div class="mb-4">
+                        <label class="fw-semibold mb-2 d-block">Chọn phương thức thanh toán:</label>
+                        <div class="ms-4">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="online" value="Online" required checked>
+                                <label class="form-check-label" for="online">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-wallet" viewBox="0 0 16 16">
+                                        <path d="M0 3a2 2 0 0 1 2-2h13.5a.5.5 0 0 1 0 1H15v2a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-1.5 1.5h-12A2.5 2.5 0 0 1 0 12.5zm1 1.732V12.5A1.5 1.5 0 0 0 2.5 14h12a.5.5 0 0 0 .5-.5V5H2a2 2 0 0 1-1-.268M1 3a1 1 0 0 0 1 1h12V2H2a1 1 0 0 0-1 1" />
+                                    </svg> Thanh toán Online
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD">
+                                <label class="form-check-label" for="cod">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-cash" viewBox="0 0 16 16">
+                                        <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                                        <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z" />
+                                    </svg>Thanh toán bằng tiền mặt (COD)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="text-start mb-3">
+                    <button type="submit" class="btn btn-danger px-5 py-2 rounded-pill text-white fw-semibold shadow-sm">
+                        Đặt Hàng
+                    </button>
+                </div>
+                <p class="text-danger fw-semibold mb-3 ">
+                    Ngày dự kiến giao hàng:
+                    <span class="text-dark">
+                        @DateTime.Now.AddDays(7).ToShortDateString() - @DateTime.Now.AddDays(14).ToShortDateString()
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
 </form>
 @section Scripts {
-	@{
-		<partial name="_ValidationScriptsPartial" />
-	}
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
 }

@@ -149,14 +149,18 @@
                                     }
                                 </div>
                             </div>
-                            <div class="row my-1">
-                                <div class="col-3">Ngày giao hàng</div>
-                                <div class="col-9">
-                                    <input value="@Model.OrderHeader.ShippingDate.ToShortDateString()" readonly type="text" class="form-control" />
+                            @if (Model.OrderHeader.OrderStatus != SD.StatusApproved && Model.OrderHeader.OrderStatus != SD.StatusInProcess && Model.OrderHeader.OrderStatus != SD.PaymentStatusPending)
+                            {
+                                <div class="row my-1">
+                                    <div class="col-3">Ngày giao hàng</div>
+                                    <div class="col-9">
+                                        <input value="@Model.OrderHeader.ShippingDate.ToShortDateString()" readonly type="text" class="form-control" />
+                                    </div>
                                 </div>
-                            </div>
 
-                            @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+                            }
+
+                            @if ((User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee)) && @Model.OrderHeader.SessionId != null)
                             {
                                 <div class="row my-1">
                                     <div class="col-3">Mã phiên giao dịch</div>
@@ -177,7 +181,7 @@
                             }
                             <div class="row my-1">
 
-                                @if (Model.OrderHeader.SessionId == null)
+                                @if (Model.OrderHeader.SessionId == null && @Model.OrderHeader.PaymentDueDate.Year > 100)
                                 {
                                     <div class="col-3">Ngày đến hạn thanh toán</div>
                                     <div class="col-9">
@@ -185,7 +189,7 @@
                                     </div>
 
                                 }
-                                else
+                                else if (@Model.OrderHeader.PaymentDate.Year > 100)
                                 {
                                     <div class="col-3">Ngày thanh toán</div>
                                     <div class="col-9">
@@ -258,12 +262,20 @@
                                 {
                                     <button type="submit" onclick="return validateInput()" asp-action="ShipOrder" class="btn btn-primary form-control my-1">Giao Hàng</button>
                                 }
-
+                                @if(Model.OrderHeader.OrderStatus == SD.StatusShipped)
+                                {
+                                    <button type="submit" asp-action="CompleteOrder" class="btn btn-primary form-control my-1">Giao hàng thành công</button>
+                                }
                                 @if (Model.OrderHeader.OrderStatus != SD.StatusRefunded &&
-                               Model.OrderHeader.OrderStatus != SD.StatusCancelled &&
-                               Model.OrderHeader.OrderStatus != SD.StatusShipped)
+                               Model.OrderHeader.OrderStatus != SD.StatusCancelled && Model.OrderHeader.OrderStatus != SD.StatusComplete
+                               )
                                 {
                                     <button asp-action="CancelOrder" type="submit" class="btn btn-danger form-control my-1">Hủy Đơn Hàng</button>
+                                }
+                                @if (Model.OrderHeader.OrderStatus == SD.StatusComplete 
+                               )
+                                {
+                                    <button asp-action="CancelOrder" type="submit" class="btn btn-danger form-control my-1">Khách Trả Hàng</button>
                                 }
                             }
                         </div>

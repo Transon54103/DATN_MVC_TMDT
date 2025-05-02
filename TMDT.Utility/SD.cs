@@ -17,9 +17,10 @@ namespace TMDT.Utility
         public const string StatusPending = "Chờ xử lý";
         public const string StatusApproved = "Đang duyệt";
         public const string StatusInProcess = "Đang xử lý";
-        public const string StatusShipped = "Đã giao hàng";
+        public const string StatusShipped = "Đang giao hàng";
         public const string StatusCancelled = "Đã hủy";
         public const string StatusRefunded = "Đã hoàn tiền";
+        public const string StatusComplete = "Hoàn thành đơn hàng";
 
         public const string PaymentStatusPending = "Chờ thanh toán";
         public const string PaymentStatusApproved = "Đã thanh toán";

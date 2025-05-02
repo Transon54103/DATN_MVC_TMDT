@@ -133,7 +133,7 @@
                                                 <div class="card-detail">
                                                     <h5 class="mt-2"><a href="@Url.Action("Details", "Product", new { id = item.ProductId })">@item.Product.Title</a></h5>
                                                     <div class="card-price">
-                                                        <span class="price text-primary fw-light" data-currency-usd="$@item.Price">$@item.Price</span>
+                                                        <span class="price text-primary fw-light" data-currency-vnd="@item.Price.ToString("N0")">@item.Price.ToString("N0") VND</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -204,8 +204,9 @@
                                         <td data-title="Tổng tiền">
                                             <span class="price-amount amount text-primary ps-5 fw-light">
                                                 <bdi>
-                                                    @Model.OrderHeader.OrderTotal <span class="price-currency-symbol">Đồng</span>
+                                                    @Model.OrderHeader.OrderTotal.ToString("N0") <span class="price-currency-symbol">Đồng</span>
                                                 </bdi>
+
                                             </span>
                                         </td>
                                     </tr>
@@ -214,7 +215,10 @@
                         </div>
                         <div class="button-wrap d-flex flex-wrap gap-3">
                             <button class="btn"><a class="text-white" asp-area="Customer" asp-controller="Home" asp-action="Index">Tiếp tục mua hàng</a></button>
-                            <button class="btn"><a class="text-white" asp-action="Summary">Đặt Hàng</a></button>
+                            @if(Model.OrderHeader.OrderTotal > 0){
+                                <button class="btn"><a class="text-white" asp-action="Summary">Đặt Hàng</a></button>
+                            }
+
                         </div>
                     </div>
                 </div>
