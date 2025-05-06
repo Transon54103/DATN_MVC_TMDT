@@ -35,7 +35,7 @@
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Order List</h2>
+                <h2 class="text-white py-2">Danh sách đơn hàng</h2>
             </div>
         </div>
     </div>
@@ -44,22 +44,23 @@
             <span></span>
             <ul class="list-group list-group-horizontal-sm">
                 <a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="inprocess">
-                <li class="list-group-item @inprocess">In Process</li>
+                <li class="list-group-item @inprocess">Đang xử lý</li>
                 </a>
                 <a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="pending">
-                <li class="list-group-item @pending">Payment Pending</li>
+                <li class="list-group-item @pending">Chờ thanh toán</li>
                 </a>
                 <a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="completed">
-                <li class="list-group-item @completed">Completed</li>
+                <li class="list-group-item @completed">Đã hoàn tất</li>
                 </a>
                 <a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="approved">
-                <li class="list-group-item @approved">Approved</li>
+                <li class="list-group-item @approved">Đang duyệt</li>
                 </a>
                 <a style="text-decoration:none;" asp-controller="Order" asp-action="Index" asp-route-status="all">
-                <li class="list-group-item @all">All</li>
+                <li class="list-group-item @all">Tất cả</li>
                 </a>
             </ul>
         </div>
+
         <table id="tblData" class="table table-bordered table-striped" style="width:100%">
             <thead>
                 <tr>

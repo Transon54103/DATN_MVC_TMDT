@@ -7,15 +7,14 @@ namespace TMDT.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        [MaxLength(30)]
-        [DisplayName("Category Name")]
+
+        [Required(ErrorMessage = "Tên thể loại là bắt buộc.")]
+        [MaxLength(30, ErrorMessage = "Tên thể loại tối đa 30 ký tự.")]
+        [DisplayName("Tên thể loại")]
         public string Name { get; set; }
-        [DisplayName("Display Order")]
-        [Range(1, 100, ErrorMessage = "The field Display Order must be between 1 and 100!")]
+        [Required(ErrorMessage = "Thứ tự hiển thị là bắt buộc.")]
+        [DisplayName("Thứ tự hiển thị")]
+        [Range(1, 100, ErrorMessage = "Thứ tự hiển thị phải từ 1 đến 100.")]
         public int DisplayOrder { get; set; }
-
-
-
     }
 }

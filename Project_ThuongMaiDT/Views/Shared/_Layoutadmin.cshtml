@@ -63,17 +63,12 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <div class="sb-sidenav-menu-heading">Trang Chủ</div>
                         <a class="nav-link" asp-area="Admin" asp-controller="Admin" asp-action="Index">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
-
-                        <div class="sb-sidenav-menu-heading">Interface</div>
-                        <a class="nav-link" asp-area="Admin" asp-controller="Product" asp-action="Index">
-                            <div class="sb-nav-link-icon"><i class="bi bi-book"></i></div>
-                            Danh mục sản phẩm
-                        </a>
+                        <div class="sb-sidenav-menu-heading">Quản Lý Danh Mục</div>
                         <a class="nav-link" asp-area="Admin" asp-controller="Category" asp-action="Index">
                             <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                             Danh mục thể loại
@@ -86,9 +81,10 @@
                             <div class="sb-nav-link-icon"><i class="bi bi-book"></i></div>
                             Danh mục NXB
                         </a>
-                        <a class="nav-link" asp-area="Admin" asp-controller="Company" asp-action="Index">
-                            <div class="sb-nav-link-icon"><i class="bi bi-building"></i></i></div>
-                            Danh mục công ty
+                        <div class="sb-sidenav-menu-heading">Bán Hàng</div>
+                        <a class="nav-link" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="bi bi-book"></i></div>
+                            Các sản phẩm
                         </a>
                         <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">
                             <div class="sb-nav-link-icon"><i class="bi bi-basket"></i></div>
@@ -98,13 +94,22 @@
                             <div class="sb-nav-link-icon"><i class="bi bi-bar-chart-line"></i></i></div>
                             Thống kê doanh thu
                         </a>
+                        <div class="sb-sidenav-menu-heading">Quản Lý Người Dùng</div>
+                        <a class="nav-link" asp-area="Admin" asp-controller="User" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="bi bi-building"></i></i></div>
+                            Người Dùng
+                        </a>
+                        <a class="nav-link" asp-area="Admin" asp-controller="Company" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="bi bi-building"></i></i></div>
+                            Danh mục công ty
+                        </a>
                         <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
                             <div class="sb-nav-link-icon"><i class="bi bi-bar-chart-line"></i></i></div>
-                            Đăng ký thành viên mới
+                            Thêm thành thành viên mới
                         </a>
                     </div>
                 </div>
-                <div class="sb-sidenav-footer">
+                <div class="sb-sidenav-footer mt-4">
                     <div class="small">Logged in as:</div>
                     Your Website
                 </div>

@@ -323,14 +323,16 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             _unitOfWork.Save();
             if (orderHeader.ApplicationUser != null && !string.IsNullOrEmpty(orderHeader.ApplicationUser.Email))
             {
+                var orderCode = $"DH2025{id.ToString("D4")}"; // Tạo mã đơn hàng định dạng DH2025xxxx
                 var subject = "Xác nhận đơn hàng thành công";
                 var message = $@"
-                                Xin chào {orderHeader.ApplicationUser.Name},<br/><br/>
-                                Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được xác nhận thành công.<br/>
-                                Tổng tiền: {orderHeader.OrderTotal:N0} VNĐ.<br/>
-                                Đơn hàng đang được chuẩn bị và sẽ sớm được vận chuyển.<br/><br/>
-                                Xin cảm ơn quý khách và chúc quý khách một ngày tốt lành!
-                            ";
+                        Xin chào {orderHeader.ApplicationUser.Name},<br/><br/>
+                        Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được xác nhận thành công.<br/>
+                        Mã đơn hàng: {orderCode}<br/>
+                        Tổng tiền: {orderHeader.OrderTotal:N0} VNĐ.<br/>
+                        Đơn hàng đang được chuẩn bị và sẽ sớm được vận chuyển.<br/><br/>
+                        Xin cảm ơn quý khách và chúc quý khách một ngày tốt lành!
+                    ";
 
                 _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, subject, message);
             }

@@ -328,13 +328,13 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             switch (status)
             {
                 case "pending":
-                    objOrderHeaders = objOrderHeaders.Where(u => u.PaymentStatus == SD.PaymentStatusDelayedPayment);
+                    objOrderHeaders = objOrderHeaders.Where(u => u.PaymentStatus == SD.PaymentStatusDelayedPayment || u.PaymentStatus == "Thanh toán bằng tiền mặt");
                     break;
                 case "inprocess":
                     objOrderHeaders = objOrderHeaders.Where(u => u.OrderStatus == SD.StatusInProcess);
                     break;
                 case "completed":
-                    objOrderHeaders = objOrderHeaders.Where(u => u.OrderStatus == SD.StatusShipped);
+                    objOrderHeaders = objOrderHeaders.Where(u => u.OrderStatus == SD.StatusComplete);
                     break;
                 case "approved":
                     objOrderHeaders = objOrderHeaders.Where(u => u.OrderStatus == SD.StatusApproved);

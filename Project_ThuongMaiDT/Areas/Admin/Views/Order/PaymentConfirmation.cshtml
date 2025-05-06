@@ -1,19 +1,15 @@
-﻿@model int
-
-<div class="container row pt-4">
+﻿<div class="container row pt-4">
     <div class="col-12 text-center">
-        <h1 class="text-primary text-center">Payment Successful!</h1>
-        Order Number : @Model <br /><br />
+        <h1 class="text-primary text-center">Thanh toán thành công!</h1>
+        Mã đơn hàng: @Model <br /><br />
         <img src="~/images/lawn_leaf.jpg" width="65%" />
     </div>
     <div class="col-12 text-center" style="color:maroon">
         <br />
-        Payment has been applied successfully! <br />
+        Thanh toán đã được thực hiện thành công! <br />
         <a asp-area="Admin"
            asp-controller="Order"
            asp-action="Details"
-           asp-route-orderId="@Model" class="btn btn-primary">Back to Order Details</a>
-
+           asp-route-orderId="@Model" class="btn btn-primary">Quay lại chi tiết đơn hàng</a>
     </div>
-
-</div> 
+</div>

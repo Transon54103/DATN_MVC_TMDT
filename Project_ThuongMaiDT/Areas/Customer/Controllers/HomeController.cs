@@ -118,7 +118,7 @@ namespace Project_ThuongMaiDT.Areas.Customer.Controllers
             // Kiểm tra nếu người dùng đã mua sản phẩm này
             string userId = User.Identity.Name; // Hoặc cách lấy UserId từ Authentication
             var orderHeaders = _unitOfWork.OrderDetail.GetAll(od => od.OrderHeader.ApplicationUser.UserName == userId && od.ProductId == productId
-                                    && od.OrderHeader.OrderStatus == SD.StatusShipped && od.OrderHeader.PaymentStatus == SD.PaymentStatusApproved)
+                                    && od.OrderHeader.OrderStatus == SD.StatusComplete && od.OrderHeader.PaymentStatus == SD.PaymentStatusApproved)
                                                       .Select(od => od.OrderHeader)
                                                       .Distinct()
                                                       .ToList();
