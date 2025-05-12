@@ -1,6 +1,301 @@
-﻿@{
+﻿@using Newtonsoft.Json
+@{
     Layout = "~/Views/Shared/_Layoutadmin.cshtml";
 }
 
-<h2>Trang quản trị</h2>
+<h2 class="mb-4">Trang quản trị</h2>
 <p>Chào mừng bạn đến với trang quản trị.</p>
+<!-- Order Status Cards -->
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4 @(ViewBag.SelectedStatus == "completed" ? "border-dark" : "")">
+            <div class="card-body">Đơn hàng hoàn thành: @Model.CompletedOrders</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="@Url.Action("Index", "Order", new { area = "Admin", status = "completed" })">Xem chi tiết</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4 @(ViewBag.SelectedStatus == "pending" ? "border-dark" : "")">
+            <div class="card-body">Đơn hàng đang chờ: @Model.PendingOrders</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="@Url.Action("Index", "Order", new { area = "Admin", status = "pending" })">Xem chi tiết</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4 @(ViewBag.SelectedStatus == "inprocess" ? "border-dark" : "")">
+            <div class="card-body">Đơn hàng đang xử lý: @Model.InProcessOrders</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="@Url.Action("Index", "Order", new { area = "Admin", status = "inprocess" })">Xem chi tiết</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white mb-4 @(ViewBag.SelectedStatus == "cancelled" ? "border-dark" : "")">
+            <div class="card-body">Đơn hàng đã hủy: @Model.CancelledOrders</div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="@Url.Action("Index", "Order", new { area = "Admin", status = "" })">Xem chi tiết</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Charts -->
+<div class="row">
+    <!-- Pie Charts -->
+    <div class="col-lg-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-pie me-1"></i> Doanh Thu Theo Thể Loại
+            </div>
+            <div class="card-body">
+                <canvas id="myCategoryPieChart" width="300" height="300" style="display: block;"></canvas>
+                @if (string.IsNullOrEmpty(Model.ChartLabels) || Model.ChartLabels == "[]")
+                {
+                    <p class="text-danger">Không có dữ liệu doanh thu theo thể loại để hiển thị biểu đồ.</p>
+                }
+            </div>
+            <div class="card-footer small text-muted">Cập nhật lúc @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-pie me-1"></i> Doanh Thu Theo Nhà Xuất Bản
+            </div>
+            <div class="card-body">
+                <canvas id="myPublisherPieChart" width="300" height="300" style="display: block;"></canvas>
+                @if (string.IsNullOrEmpty(Model.PublisherChartLabels) || Model.PublisherChartLabels == "[]")
+                {
+                    <p class="text-danger">Không có dữ liệu doanh thu theo nhà xuất bản để hiển thị biểu đồ.</p>
+                }
+            </div>
+            <div class="card-footer small text-muted">Cập nhật lúc @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+    <!-- Form lọc theo ngày -->
+    <form method="get" class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <label for="startDay">Từ ngày:</label>
+        <input type="date" id="startDay" name="startDate" class="form-control form-control-sm w-auto"
+               value="@ViewBag.StartDate" />
+
+        <label for="endDay">Đến ngày:</label>
+        <input type="date" id="endDay" name="endDate" class="form-control form-control-sm w-auto"
+               value="@ViewBag.EndDate" />
+
+        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+    </form>
+
+    <!-- Thông tin tổng quan -->
+    <div class="mb-3">
+        <strong>Tổng Doanh Thu:</strong> @ViewBag.TotalRevenue VNĐ <br />
+        <strong>Tổng Lợi Nhuận:</strong> @ViewBag.TotalProfit VNĐ
+    </div>
+
+    <!-- Biểu đồ doanh thu -->
+    <canvas id="revenueChart" style="max-width: 100%; height: 300px;"></canvas>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+
+            var labels = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Labels));
+            var dataDoanhThu = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Data_DoanhThu));
+            var dataLoiNhuan = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Data_LoiNhuan));
+
+            if (labels.length === 0 || dataDoanhThu.length === 0) {
+                document.getElementById('revenueChart').style.display = 'none';
+                console.warn("Không có dữ liệu để hiển thị biểu đồ.");
+                return;
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Doanh thu (VNĐ)',
+                            data: dataDoanhThu,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Lợi nhuận (VNĐ)',
+                            data: dataLoiNhuan,
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    layout: {
+                        padding: 10
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.table').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                }
+            });
+
+
+
+            // Pie Chart: Revenue by Category
+            var categoryCtx = document.getElementById('myCategoryPieChart');
+            if (categoryCtx) {
+                var categoryChartLabels = @Html.Raw(Model.ChartLabels);
+                var categoryChartData = @Html.Raw(Model.ChartData);
+
+                if (categoryChartLabels.length > 0) {
+                    new Chart(categoryCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: categoryChartLabels,
+                            datasets: [{
+                                data: categoryChartData,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.8)',
+                                    'rgba(54, 162, 235, 0.8)',
+                                    'rgba(255, 206, 86, 0.8)',
+                                    'rgba(75, 192, 192, 0.8)',
+                                    'rgba(153, 102, 255, 0.8)',
+                                    'rgba(255, 159, 64, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                title: { display: true, text: 'Doanh Thu Theo Thể Loại' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            var value = tooltipItem.raw;
+                                            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.log('No data available for category pie chart');
+                }
+            } else {
+                console.error('Canvas element myCategoryPieChart not found');
+            }
+
+            // Pie Chart: Revenue by Publisher
+            var publisherCtx = document.getElementById('myPublisherPieChart');
+            if (publisherCtx) {
+                var publisherChartLabels = @Html.Raw(Model.PublisherChartLabels);
+                var publisherChartData = @Html.Raw(Model.PublisherChartData);
+
+                if (publisherChartLabels.length > 0) {
+                    new Chart(publisherCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: publisherChartLabels,
+                            datasets: [{
+                                data: publisherChartData,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.8)',
+                                    'rgba(54, 162, 235, 0.8)',
+                                    'rgba(255, 206, 86, 0.8)',
+                                    'rgba(75, 192, 192, 0.8)',
+                                    'rgba(153, 102, 255, 0.8)',
+                                    'rgba(255, 159, 64, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                title: { display: true, text: 'Doanh Thu Theo Nhà Xuất Bản' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            var value = tooltipItem.raw;
+                                            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.log('No data available for publisher pie chart');
+                }
+            } else {
+                console.error('Canvas element myPublisherPieChart not found');
+            }
+        });
+    </script>
+}

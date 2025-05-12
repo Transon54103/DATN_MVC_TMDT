@@ -40,7 +40,7 @@ namespace TMDT.DataAccess.Repository
                 //    objFromDb.ImageUrl = obj.ImageUrl;
                 //}
                 objFromDb.ProductImages = obj.ProductImages;
-                objFromDb.Publisher = obj.Publisher;
+                objFromDb.PublisherId = obj.PublisherId;
             }
         }
     }
