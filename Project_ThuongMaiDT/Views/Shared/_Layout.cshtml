@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <link rel="stylesheet" href="//cdn.datatables.net/1.11.2/css/jquery.dataTables.min.css" />
+    <script src="https://cdn.tiny.cloud/1/6insivodw9b2yuq4p8i7lrnqht4gu2ur6nia5aep61xr4nax/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 
 
 </head>
@@ -215,45 +216,14 @@
                                 <a class="nav-link me-4" asp-area="Customer" asp-controller="Home" asp-action="TopSellingBooks">Trang chủ</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="about.html">Giới thiệu</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link me-4" asp-area="Customer" asp-controller="Home" asp-action="Index">Cửa hàng</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="blog.html">Blog</a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link me-4 dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Trang khác</a>
-                                <ul class="dropdown-menu animate slide border">
-                                    <li>
-                                        <a href="about.html" class="dropdown-item fw-light">Giới thiệu <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="shop.html" class="dropdown-item active fw-light">Cửa hàng <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="single-product.html" class="dropdown-item fw-light">Chi tiết sản phẩm <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="cart.html" class="dropdown-item fw-light">Giỏ hàng <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="checkout.html" class="dropdown-item fw-light">Thanh toán <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="blog.html" class="dropdown-item fw-light">Blog <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="single-post.html" class="dropdown-item fw-light">Bài viết <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                    <li>
-                                        <a href="contact.html" class="dropdown-item fw-light">Liên hệ <span class="badge bg-primary">Pro</span></a>
-                                    </li>
-                                </ul>
-                            </li>
+
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="contact.html">Liên hệ</a>
+                                <a class="nav-link me-4" asp-area="Customer" asp-controller="Home" asp-action="Privacy">Liên hệ</a>
                             </li>
 @*                             <li class="nav-item">
                                 <a class="nav-link text-decoration-underline me-4" href="https://templatesjungle.gumroad.com/l/bookly-bookstore-ecommerce-bootstrap-html-css-website-template" target="_blank">Mua bản Pro</a>
@@ -412,7 +382,6 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.tiny.cloud/1/g28lhnxtlihu4l4a381gw7tz47voznshwbi10lmsvlekrfme/tinymce/6/tinymce.min.js" referrerpolicy="origin">
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -420,7 +389,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="//cdn.datatables.net/1.11.2/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.tiny.cloud/1/k90vjnd6sdpv0ii54uap1f8ytude78uphsque77409rrwvkk/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     @RenderSection("Scripts", required: false)
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

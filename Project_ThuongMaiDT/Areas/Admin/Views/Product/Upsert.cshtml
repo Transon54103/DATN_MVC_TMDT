@@ -22,9 +22,13 @@
                             <label asp-for="Product.Title" class="ms-2">Tên sản phẩm</label>
                             <span asp-validation-for="Product.Title" class="text-danger"></span>
                         </div>
-                        <div class="form-floating py-2 col-12">
-                          
+@*                         <div class="form-floating py-2 col-12">
                             <input asp-for="Product.Description" class="form-control border-0 shadow" />
+                            <label asp-for="Product.Description" class="ms-2">Mô tả</label>
+                            <span asp-validation-for="Product.Description" class="text-danger"></span>
+                        </div> *@
+                        <div class="form-floating py-2 col-12">
+                            <textarea asp-for="Product.Description" class="form-control border-0 shadow" rows="4"></textarea>
                             <label asp-for="Product.Description" class="ms-2">Mô tả</label>
                             <span asp-validation-for="Product.Description" class="text-danger"></span>
                         </div>
@@ -122,18 +126,15 @@
     </div>
 </div>
 @section Scripts {
+    <!-- Place the first <script> tag in your HTML's <head> -->
+    <script src="https://cdn.tiny.cloud/1/6insivodw9b2yuq4p8i7lrnqht4gu2ur6nia5aep61xr4nax/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
     <script>
         tinymce.init({
             selector: 'textarea',
-            plugins: 'anchor autolink',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent ',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Tác giả',
-            mergetags_list: [
-                { value: 'First.Name', title: 'Tên' },
-                { value: 'Email', title: 'Email' },
-            ],
-            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("Xem tài liệu để tích hợp AI Assistant")),
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
         });
     </script>
     @{

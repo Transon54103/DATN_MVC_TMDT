@@ -18,12 +18,25 @@ namespace TMDT.DataAccess.Repository
             _db = db; 
         }
 
+        public override void Add(Product product)
+        {
+            // Kiểm tra tính duy nhất của ISBN
+            if (_db.products.Any(p => p.ISBN == product.ISBN))
+            {
+                throw new InvalidOperationException("ISBN đã tồn tại. Vui lòng sử dụng một ISBN duy nhất.");
+            }
 
+            base.Add(product); // Gọi phương thức Add của lớp cha (Repository<T>)
+        }
         public void Update(Product obj)
         {
             var objFromDb = _db.products.FirstOrDefault(x => x.Id == obj.Id);
             if (objFromDb != null)
             {
+                if (obj.ISBN != objFromDb.ISBN && _db.products.Any(p => p.ISBN == obj.ISBN && p.Id != obj.Id))
+                {
+                    throw new InvalidOperationException("ISBN đã tồn tại. Vui lòng sử dụng một ISBN duy nhất.");
+                }
                 objFromDb.Title = obj.Title;
                 objFromDb.ISBN = obj.ISBN;
                 objFromDb.Price = obj.Price;

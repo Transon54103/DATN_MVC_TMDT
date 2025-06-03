@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using TMDT.DataAccess.Data;
 using TMDT.DataAccess.Repository.IRepository;
 using TMDT.Models;
@@ -61,79 +62,100 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             }
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Upsert(ProductVM productVM, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
-                if (productVM.Product.Id == 0)
+                try
                 {
-                    _unitOfWork.Product.Add(productVM.Product);
-                }
-                else
-                {
-                    _unitOfWork.Product.Update(productVM.Product);
-                }
-
-                _unitOfWork.Save();
-
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-
-                if (files != null && files.Count > 0)
-                {
-                    string productPath = @"images\products\product-" + productVM.Product.Id;
-                    string finalPath = Path.Combine(wwwRootPath, productPath);
-
-                    if (!Directory.Exists(finalPath))
-                        Directory.CreateDirectory(finalPath);
-
-                    foreach (IFormFile file in files)
+                    if (productVM.Product.Id == 0)
                     {
-                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        string filePath = Path.Combine(finalPath, fileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-
-                        ProductImage productImage = new ProductImage
-                        {
-                            ImageUrl = @"\" + productPath + @"\" + fileName,
-                            ProductId = productVM.Product.Id,
-                        };
-
-                        _unitOfWork.ProductImage.Add(productImage);
+                        // Thêm mới sản phẩm
+                        _unitOfWork.Product.Add(productVM.Product);
+                    }
+                    else
+                    {
+                        // Cập nhật sản phẩm
+                        _unitOfWork.Product.Update(productVM.Product);
                     }
 
                     _unitOfWork.Save();
+
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+
+                    if (files != null && files.Count > 0)
+                    {
+                        string productPath = @"images\products\product-" + productVM.Product.Id;
+                        string finalPath = Path.Combine(wwwRootPath, productPath);
+
+                        if (!Directory.Exists(finalPath))
+                            Directory.CreateDirectory(finalPath);
+
+                        foreach (IFormFile file in files)
+                        {
+                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            string filePath = Path.Combine(finalPath, fileName);
+
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                file.CopyTo(fileStream);
+                            }
+
+                            ProductImage productImage = new ProductImage
+                            {
+                                ImageUrl = @"\" + productPath + @"\" + fileName,
+                                ProductId = productVM.Product.Id,
+                            };
+
+                            _unitOfWork.ProductImage.Add(productImage);
+                        }
+
+                        _unitOfWork.Save();
+                    }
+
+                    TempData["success"] = "Sản phẩm đã chỉnh sửa thành công!";
+                    return RedirectToAction("Index");
                 }
-
-                TempData["success"] = "Sản phẩm đã chỉnh sửa thành công!";
-                return RedirectToAction("Index");
+                catch (InvalidOperationException ex)
+                {
+                    // Xử lý lỗi từ ProductRepository (ví dụ: ISBN trùng lặp)
+                    ModelState.AddModelError("Product.ISBN", ex.Message);
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Xử lý lỗi từ cơ sở dữ liệu (ví dụ: vi phạm ràng buộc duy nhất)
+                    if (ex.InnerException?.Message.Contains("ISBN") ?? false)
+                    {
+                        ModelState.AddModelError("Product.ISBN", "ISBN đã tồn tại. Vui lòng sử dụng một ISBN duy nhất.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu sản phẩm.");
+                    }
+                }
             }
-            else
+
+            // Nếu ModelState không hợp lệ, nạp lại các danh sách dropdown
+            productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
             {
-                // Nếu ModelState không hợp lệ — nạp lại các SelectList
-                productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                });
+                Text = u.Name,
+                Value = u.Id.ToString()
+            });
 
-                productVM.AuthorList = _unitOfWork.Author.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.AuthorId.ToString()
-                });
+            productVM.AuthorList = _unitOfWork.Author.GetAll().Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.AuthorId.ToString()
+            });
 
-                productVM.PublisherList = _unitOfWork.Publisher.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                });
+            productVM.PublisherList = _unitOfWork.Publisher.GetAll().Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.Id.ToString()
+            });
 
-                return View(productVM);
-            }
+            return View(productVM);
         }
 
         public IActionResult DeleteImage(int imageId)

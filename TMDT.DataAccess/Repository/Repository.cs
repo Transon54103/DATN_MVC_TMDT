@@ -17,10 +17,10 @@ namespace TMDT.DataAccess.Repository
         {
             _db = db;
             this.dbSet = _db.Set<T>();
-            _db.products.Include(u => u.Category).Include(u => u.CategoryId);
+            //_db.products.Include(u => u.Category).Include(u => u.CategoryId);
       
         }
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
             dbSet.Add(entity);
         }

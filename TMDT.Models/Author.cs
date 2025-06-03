@@ -11,6 +11,8 @@ namespace TMDT.Models
     {
         [Key]
         public int AuthorId { get; set; }  // Khóa chính
+
+        [Required(ErrorMessage = "Tên tác giả là bắt buộc.")]
         public string Name { get; set; }
 
         public string? ImageUrl { get; set; }

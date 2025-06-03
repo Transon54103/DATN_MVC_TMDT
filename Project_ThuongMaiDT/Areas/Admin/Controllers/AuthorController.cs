@@ -72,12 +72,12 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
                 if (author.AuthorId == 0)
                 {
                     _unitOfWork.Author.Add(author);
-                    TempData["success"] = "Author added successfully";
+                    TempData["success"] = "Đã thêm tác giả mới!";
                 }
                 else
                 {
                     _unitOfWork.Author.Update(author);
-                    TempData["success"] = "Author updated successfully";
+                    TempData["success"] = "Đã cập nhât tác giả!";
                 }
 
                 _unitOfWork.Save();

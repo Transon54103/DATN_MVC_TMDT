@@ -44,7 +44,7 @@ namespace Project_ThuongMaiDT.Areas.Admin.Controllers
             }
 
             // POST: Publisher/Upsert
-            [HttpPost]
+        [HttpPost]
         public IActionResult Upsert(Publisher publisher, IFormFile? file)
         {
             if (ModelState.IsValid)

@@ -22,21 +22,21 @@
                         <!-- Publisher Name -->
                         <div class="form-floating py-2 col-12">
                             <input asp-for="Name" class="form-control border-0 shadow" />
-                            <label asp-for="Name" class="ms-2">Publisher Name</label>
+                            <label asp-for="Name" class="ms-2">Tên nhà xuất bản</label>
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <!-- Publisher Image -->
                         <div class="form-floating py-2 col-12">
                             <input type="file" name="file" class="form-control border-0 shadow" />
-                            <label asp-for="ImageUrl" class="ms-2">Publisher Image</label>
+                            <label asp-for="ImageUrl" class="ms-2">Ảnh nhà xuất bản</label>
                             <span asp-validation-for="ImageUrl" class="text-danger"></span>
                         </div>
 
                         <!-- Publisher Description -->
                         <div class="form-floating py-2 col-12">
                             <textarea asp-for="Description" class="form-control border-0 shadow" rows="4"></textarea>
-                            <label asp-for="Description" class="ms-2">Description</label>
+                            <label asp-for="Description" class="ms-2">Mô tả</label>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
@@ -45,16 +45,16 @@
                             <div class="col-6 col-md-3">
                                 @if (Model.Id != 0)
                                 {
-                                    <button type="submit" class="btn btn-primary form-control">Update</button>
+                                    <button type="submit" class="btn btn-primary form-control">Cập nhật</button>
                                 }
                                 else
                                 {
-                                    <button type="submit" class="btn btn-primary form-control">Create</button>
+                                    <button type="submit" class="btn btn-primary form-control">Tạo mới</button>
                                 }
                             </div>
                             <div class="col-6 col-md-3">
                                 <a asp-controller="Publisher" asp-action="Index" class="btn btn-outline-secondary form-control">
-                                    Back to List
+                                    Trở lại
                                 </a>
                             </div>
                         </div>
@@ -77,11 +77,15 @@
 </div>
 
 @section Scripts {
+    <!-- Place the first <script> tag in your HTML's <head> -->
+    <script src="https://cdn.tiny.cloud/1/6insivodw9b2yuq4p8i7lrnqht4gu2ur6nia5aep61xr4nax/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
     <script>
         tinymce.init({
             selector: 'textarea',
-            plugins: 'anchor autolink',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align lineheight | checklist numlist bullist indent outdent',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
         });
     </script>
     @{

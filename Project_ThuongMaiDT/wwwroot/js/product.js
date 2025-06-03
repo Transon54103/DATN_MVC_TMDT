@@ -11,7 +11,14 @@ function loadDataTable() {
             { data: 'authors.name', "width": "15%" },
             { data: 'category.name', "width": "10%" },
             { data: 'quantity', "width": "15%" },
-            { data: 'listPrice', "width": "10%" },
+            {
+                data: 'price',
+                "render": function (data, type, row) {
+                    // Định dạng tiền tệ VNĐ
+                    return parseInt(data).toLocaleString('vi-VN') + ' VNĐ';
+                },
+                "width": "10%"
+            },
             {
                 data: 'isActive',
                 "render": function (data, type, row) {
@@ -61,7 +68,7 @@ function Delete(url) {
                 type: 'DELETE',
                 success: function (data) {
                     dataTable.ajax.reload();
-                    toastr.success(data.message);
+                    toastr.success("Đã xóa thành công!");
                 }
             })
         }

@@ -21,10 +21,10 @@ function loadDataTable() {
                 "render": function (data, type, row) {
                     return `<div class="w-100 btn-group" role="group">
                         <a href="/admin/publisher/upsert?id=${data}" class="btn btn-primary mx-1">
-                            <i class="bi bi-pencil-square"></i> Edit
+                            <i class="bi bi-pencil-square"></i> Sửa
                         </a>
                         <button onClick="Delete('/admin/publisher/delete/${data}')" class="btn btn-danger mx-1">
-                            <i class="bi bi-trash-fill"></i> Delete
+                            <i class="bi bi-trash-fill"></i> Xóa
                         </button>
                     </div>`;
                 },

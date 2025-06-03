@@ -1,9 +1,80 @@
 ﻿@{
-    ViewData["Title"] = "Dự Án Cá Nhân Đầu Tay";
+    ViewData["Title"] = "Dự án cá nhân";
 }
-<h1 class="text-center" style="color: red">@ViewData["Title"]</h1>
 
-<div class="text-center">
-    <p>FB: <a href="https://www.facebook.com/som.van.58118/" target="_blank" style="text-decoration: none;">Trần Văn Sơn</a></p>
-    <p>SĐT: 0372396282</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0 text-center intro-card">
+                <div class="card-body p-4">
+                    <!-- Ảnh đại diện -->
+                    <img src="https://scontent.fvii2-4.fna.fbcdn.net/v/t39.30808-6/476099366_1253016722439068_2719266647090833128_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeEBZj1JwUWN1kVYL_ne1689Mira7dUNrVoyKtrt1Q2tWmIywruPOeEvOSo4QNUliILlI3AZbkCKJ47Uy78wf8vi&_nc_ohc=qZW7IY5p3lAQ7kNvwGAMoxE&_nc_oc=AdmolArWHjp3BEorw6OIO-aCYa_gx-bUnAYCd8ruwqo0uxJLVJzGVRCY4xh7lElXGrk&_nc_zt=23&_nc_ht=scontent.fvii2-4.fna&_nc_gid=NLtJzrNrBtZIWvpi9sHB7w&oh=00_AfIhKeM3b3ifCNmCgfR68NJ3hMDwYxGPpWv9JdqikiGeWg&oe=6833C340" alt="Trần Văn Sơn" class="rounded-circle mb-3 intro-avatar">
+                    <!-- Tiêu đề -->
+                    <h1 class="card-title mb-3" style="color: #dc3545; text-transform: none">@ViewData["Title"]</h1>
+                    <!-- Giới thiệu ngắn -->
+                    <p class=" mb-4">
+                        Chào mừng bạn đến với dự án cá nhân đầu tiên của tôi! Đây là nơi tôi thể hiện đam mê và kỹ năng trong việc xây dựng ứng dụng web.
+                    </p>
+                    <!-- Thông tin liên hệ -->
+                    <div class="contact-info mb-4">
+                        <p class="mb-2">
+                            <i class="bi bi-facebook me-2 text-primary"></i>
+                            <a href="https://www.facebook.com/som.van.58118/" target="_blank" class="text-decoration-none contact-link">Trần Văn Sơn</a>
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-telephone-fill me-2 text-success"></i>
+                            <a href="tel:0372396282" class="text-decoration-none contact-link">0372396282</a>
+                        </p>
+                        <!-- Thêm email nếu muốn -->
+                        <p class="mb-2">
+                            <i class="bi bi-envelope-fill me-2 text-info"></i>
+                            <a href="mailto:tranvanson@example.com" class="text-decoration-none contact-link">tranvanson@gmail.com</a>
+                        </p>
+                    </div>
+                    <!-- Nút hành động -->
+                    <a href="https://www.facebook.com/som.van.58118/" class="btn btn-primary btn-lg" style=" text-transform: none">Tìm hiểu thêm về tôi</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <!-- Đảm bảo Bootstrap Icons được tải -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+}
+
+<style>
+    /* Tùy chỉnh card giới thiệu */
+    .intro-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .intro-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .intro-avatar {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-info p {
+        font-size: 1.1rem;
+    }
+
+    .contact-link {
+        color: #333;
+        transition: color 0.2s;
+    }
+
+    .contact-link:hover {
+        color: #007bff;
+    }
+
+
+</style>

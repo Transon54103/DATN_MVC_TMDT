@@ -223,7 +223,7 @@
                                             <div class="col-8">
 
                                                 <h6 class="my-0 text-primary">@detail.Product.Title</h6>
-                                                <small class="text-muted">Giá: @detail.Product.Price.ToString("#,##0") VNĐ</small><br />
+                                                <small class="text-muted">Giá: @detail.Price.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</small><br />
 
                                                 <small class="text-muted">Số Lượng : @detail.Count</small>
                                             </div>
