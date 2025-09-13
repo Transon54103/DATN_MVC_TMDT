@@ -1,11 +1,13 @@
-📚 BookMart - Website Bán Sách ASP.NET 8 MVC
+📚 BookMart - Website Bán Sách ASP.NET 8 MVC 
+
 🚀 Giới thiệu
 
 BookMart là một dự án website thương mại điện tử bán sách được xây dựng bằng ASP.NET 8 MVC. 
 Và được update và phát triển thêm về giao diện, kèm theo tính năng gợi ý sản phẩm từ phiên bản cũ do tôi học tập và tự xây dựng nên
 
-🚀link repo git phiên bản cũ: https://github.com/Transon54103/ThuongMaiDT_MVC
 🚀link online: https://tmdtmvc-gug7cvbagpekfygj.canadacentral-01.azurewebsites.net/
+🚀link repo git phiên bản cũ: https://github.com/Transon54103/ThuongMaiDT_MVC
+
 
 
 Dự án cung cấp đầy đủ các chức năng:
